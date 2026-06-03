@@ -35,9 +35,71 @@
             line-height: 1.5;
         }
 
+        /* SECURE PORTAL LOCKSCREEN OVERLAY LAYER */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #1a2a3a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            flex-direction: column;
+        }
+
+        .login-box {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        .login-box h2 {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-box button:hover { background-color: #2980b9; }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            display: none; /* Safely masked layout framework block state */
         }
 
         header {
@@ -136,6 +198,22 @@
         }
 
         .btn-add-profile:hover { background-color: #219653; }
+
+        /* HEADER COMMAND BUTTON: LOGOUT TRIGGER CONTROL */
+        .btn-logout-portal {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: 46px;
+        }
+
+        .btn-logout-portal:hover { background-color: #c0392b; }
 
         .client-list {
             display: flex;
@@ -371,7 +449,7 @@
 
         @media print {
             body { background: white; color: black; padding: 0; margin: 0; }
-            .container, footer, .notes-section { display: none !important; }
+            .container, footer, .notes-section, #login-overlay { display: none !important; }
             #print-mount { display: block !important; background: white; padding: 10px; width: 100%; }
             .master-print-title { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 3px double #000; }
             .master-print-title h2 { font-size: 1.4rem; text-transform: uppercase; }
@@ -387,9 +465,18 @@
 </head>
 <body>
 
-<div class="container">
+<div id="login-overlay">
+    <div class="login-box">
+        <h2>Security Authentication</h2>
+        <p>Please type your access code to run dashboard entries</p>
+        <input type="password" id="app-passkey-input" placeholder="••••••" maxlength="6" autofocus />
+        <button onclick="verifyAppMasterGateAccess()">Unlock System</button>
+    </div>
+</div>
+
+<div class="container" id="main-app-layout">
     <header>
-        <h1> DML Family Accounting & Filing Tracker</h1>
+        <h1>DML Family Accounting & Filing Tracker</h1>
         
         <div class="master-control-bar">
             <div class="global-input-group">
@@ -403,10 +490,11 @@
             </div>
             <button class="btn-add-profile" onclick="addNewClientProfileFromControl()">➕ Add New Client</button>
 
-            <!-- LIVE CLOUD CONNECTION STATE STATUS NOTIFIER -->
             <div class="cloud-status-indicator" id="cloud-status">☁️ Cloud Connected</div>
             
             <button class="btn-print-master" onclick="printMasterSummaryPage()">🖨️ Print End-of-Month Master Summary</button>
+
+            <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()">🔒 Log Out</button>
         </div>
     </header>
 
@@ -421,21 +509,19 @@
 
 <script>
     // -------------------------------------------------------------
-    // CRITICAL CLOUD LINK INTEGRATION ENGINE CONFIG
+    // DATABASE LINK NODE PIPELINE
     // -------------------------------------------------------------
     const firebaseConfig = {
         databaseURL: "https://family-tracker-56b23-default-rtdb.firebaseio.com/" 
     };
     
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     // -------------------------------------------------------------
 
     let globalReportingMonth = 'June 2026';
-    let masterData = [];
-
-    const fallbackDefaultBlueprints = [
+    
+    let masterData = [
         { id: 1, name: "CHIRAG HARISHBHAI LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 101, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
         { id: 2, name: "DARSHAN HARISHBHAI LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 102, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
         { id: 3, name: "HARISHKUMAR JAYANTILAL LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 103, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
@@ -448,23 +534,52 @@
         { id: 10, name: "KIARA DARSHAN LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 110, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] }
     ];
 
-    // LIVE DATABASE LISTENER BLOCK: Listens for online updates and renders immediately
-    database.ref('tracker_state').on('value', (snapshot) => {
-        const cloudData = snapshot.val();
-        document.getElementById('cloud-status').innerText = "☁️ Cloud Synced";
-        document.getElementById('cloud-status').style.background = "#e8f8f5";
-        
-        if (cloudData) {
-            masterData = cloudData.masterData || fallbackDefaultBlueprints;
-            globalReportingMonth = cloudData.globalReportingMonth || 'June 2026';
-        } else {
-            masterData = fallbackDefaultBlueprints;
-            globalReportingMonth = 'June 2026';
-            saveState(); // push default data structure up to cloud
+    // AUTORUN RECONCILIATION GATE: Checks if user possesses an unexpired session cookie key
+    window.addEventListener('load', function() {
+        if (sessionStorage.getItem('dml_authorized_session') === 'true') {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-app-layout').style.display = 'block';
+            downloadLatestCloudData();
         }
-        document.getElementById('global-month-input').value = globalReportingMonth;
-        renderDashboardHTML();
     });
+
+    function verifyAppMasterGateAccess() {
+        const passwordInputVal = document.getElementById('app-passkey-input').value;
+        if(passwordInputVal === "031097") {
+            sessionStorage.setItem('dml_authorized_session', 'true'); // Writes secure internal session signature
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-app-layout').style.display = 'block';
+            
+            document.getElementById('global-month-input').value = globalReportingMonth;
+            renderDashboardHTML();
+            downloadLatestCloudData();
+        } else {
+            alert("Security Code Invalid: Access Rejected.");
+            document.getElementById('app-passkey-input').value = '';
+        }
+    }
+
+    function triggerManualSecurePortalLogout() {
+        sessionStorage.removeItem('dml_authorized_session');
+        alert("Portal lock activated. Terminating database stream mapping channels.");
+        location.reload();
+    }
+
+    document.getElementById('app-passkey-input').addEventListener('keydown', function(e) {
+        if(e.key === 'Enter') verifyAppMasterGateAccess();
+    });
+
+    function downloadLatestCloudData() {
+        database.ref('tracker_state').once('value').then((snapshot) => {
+            const cloudData = snapshot.val();
+            if (cloudData && cloudData.masterData) {
+                masterData = cloudData.masterData;
+                globalReportingMonth = cloudData.globalReportingMonth || 'June 2026';
+                document.getElementById('global-month-input').value = globalReportingMonth;
+                renderDashboardHTML(); 
+            }
+        });
+    }
 
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape' || event.keyCode === 27 || event.key === 'Enter' || event.keyCode === 13) {
@@ -474,13 +589,21 @@
         }
     });
 
-    // Pushes updates directly to cloud real-time database
     function saveState() {
-        document.getElementById('cloud-status').innerText = "⏳ Syncing...";
-        document.getElementById('cloud-status').style.background = "#fff3cd";
+        const statusIndicator = document.getElementById('cloud-status');
+        statusIndicator.innerText = "⏳ Syncing...";
+        statusIndicator.style.background = "#fff3cd";
+        statusIndicator.style.color = "#b7950b";
+        statusIndicator.style.borderColor = "#feedb3";
+
         database.ref('tracker_state').set({
             masterData: masterData,
             globalReportingMonth: globalReportingMonth
+        }).then(() => {
+            statusIndicator.innerText = "☁️ Cloud Synced";
+            statusIndicator.style.background = "#e8f8f5";
+            statusIndicator.style.color = "#27ae60";
+            statusIndicator.style.borderColor = "#a3e4d7";
         });
     }
 
@@ -540,7 +663,7 @@
         const candidateName = inputField.value.trim().toUpperCase();
         
         if (!candidateName) {
-            alert("Please type a valid client identity name.");
+            alert("Please type a valid client name.");
             return;
         }
 
@@ -554,6 +677,7 @@
             demats: [{ id: uniqueId + 1, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }]
         });
 
+        renderDashboardHTML();
         saveState();
         inputField.value = '';
     }
@@ -563,16 +687,26 @@
         if (targetedClient) {
             if (confirm(`Delete data for: "${targetedClient.name}"?`)) {
                 masterData = masterData.filter(c => c.id !== clientId);
+                renderDashboardHTML();
                 saveState();
             }
         }
     }
 
-    // Explicit function targeting demographic text naming conventions in master layout grid mappings
     function updateClientCardName(clientId, value) {
         const target = masterData.find(c => c.id === clientId);
         if(target) {
             target.name = value.toUpperCase();
+            saveState();
+        }
+    }
+
+    // Explicit functional layout configurations mapping properties
+    function updateDematName(clientId, dematId, value) {
+        const client = masterData.find(c => c.id === clientId);
+        const d = client?.demats.find(dm => dm.id === dematId);
+        if (d) {
+            d.name = value;
             saveState();
         }
     }
@@ -586,6 +720,7 @@
                 entryLedger: '', entryContract: '', entryPnl: '',
                 fileLedger: '', fileContract: '', filePnl: ''
             });
+            renderDashboardHTML();
             saveState();
         }
     }
@@ -594,6 +729,7 @@
         const client = masterData.find(c => c.id === clientId);
         if(client) {
             client.demats = client.demats.filter(d => d.id !== dematId);
+            renderDashboardHTML();
             saveState();
         }
     }
@@ -609,6 +745,12 @@
             const client = masterData.find(c => c.id === clientId);
             if (client) { client[key] = parsedValue; }
         }
+
+        const el = document.getElementById(dematId ? `txt-${clientId}-${dematId}-${key}` : `txt-${key}-${clientId}`);
+        if(el) {
+            el.value = parsedValue;
+            el.className = parsedValue !== '' ? 'has-date' : 'empty-date';
+        }
         saveState();
     }
 
@@ -616,7 +758,22 @@
         if (!dateVal) return;
         const [yyyy, mm, dd] = dateVal.split('-');
         const formattedStr = `${dd}/${mm}/${yyyy}`;
-        handleInputSync(clientId, dematId, key, formattedStr, isDemat);
+        
+        if (isDemat) {
+            const client = masterData.find(c => c.id === clientId);
+            const d = client?.demats.find(dm => dm.id === dematId);
+            if (d) { d[key] = formattedStr; }
+        } else {
+            const client = masterData.find(c => c.id === clientId);
+            if (client) { client[key] = formattedStr; }
+        }
+
+        const el = document.getElementById(dematId ? `txt-${clientId}-${dematId}-${key}` : `txt-${key}-${clientId}`);
+        if(el) {
+            el.value = formattedStr;
+            el.className = 'has-date';
+        }
+        saveState();
     }
 
     function printMasterSummaryPage() {
@@ -629,6 +786,7 @@
             let dematCol = '<ul class="print-ul">';
             if(c.demats.length === 0) dematCol += '<li>No Accounts</li>';
             c.demats.forEach(d => {
+                // Expanded explicit nomenclature format print arrays engine strings
                 dematCol += `<li>
                     <strong>${d.name}:</strong><br>
                     Entries &rarr; [Ledger: ${d.entryLedger || '—'} | CN: ${d.entryContract || '—'} | PL: ${d.entryPnl || '—'}]<br>
@@ -691,7 +849,7 @@
                     <div class="demat-card-item">
                         <div class="demat-card-header">
                             <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" style="border-bottom:1px dashed #cbd5e1;" />
-                            <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑️ Remove Broker</button>
+                            <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑7 Remove Broker</button>
                         </div>
                         
                         <div class="demat-row-block">
@@ -751,8 +909,8 @@
                 `;
             });
 
-            const bEntryClass = client.bankEntryDate.trim() !== '' ? 'has-date' : 'empty-date';
-            const bFileClass = client.bankFilingDate.trim() !== '' ? 'has-date' : 'empty-date';
+            const bEntryClass = client.bankEntryDate?.trim() !== '' ? 'has-date' : 'empty-date';
+            const bFileClass = client.bankFilingDate?.trim() !== '' ? 'has-date' : 'empty-date';
 
             const cardHTML = `
                 <div class="client-card" id="client-row-${client.id}">
@@ -768,7 +926,7 @@
                             <div class="input-group">
                                 <label>Accounting Entries (statement till this date is updated)</label>
                                 <div class="date-input-container">
-                                    <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
+                                    <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
                                     <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, null, 'bankEntryDate', this.value)" /></div>
                                 </div>
                             </div>
@@ -776,7 +934,7 @@
                             <div class="input-group" style="margin-top: 20px;">
                                 <label>Filing (statement till this date is filed)</label>
                                 <div class="date-input-container">
-                                    <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
+                                    <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
                                     <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, null, 'bankFilingDate', this.value)" /></div>
                                 </div>
                             </div>
@@ -805,11 +963,10 @@
         });
     }
 
-    function updateDematName(clientId, dematId, value) {
+    function updateBaseField(clientId, key, value) {
         const client = masterData.find(c => c.id === clientId);
-        const d = client?.demats.find(dm => dm.id === dematId);
-        if (d) {
-            d.name = value;
+        if(client) {
+            client[key] = value;
             saveState();
         }
     }
@@ -823,7 +980,7 @@
             saveState();
             alert("Database cleared and reset online successfully.");
         } else {
-            alert("Security Access Denied: Invalid authentication passkey credentials.");
+            alert("Security Access Denied: Invalid credentials.");
         }
     }
 </script>
