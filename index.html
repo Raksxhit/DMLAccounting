@@ -98,18 +98,54 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            position: relative; /* Context anchor layer for upper-right child layouts */
             display: none; 
         }
 
         header {
             margin-bottom: 25px;
             text-align: center;
+            position: relative;
+            padding-top: 10px;
         }
 
         header h1 {
             font-size: 2rem;
             color: var(--dark);
             margin-bottom: 20px;
+            padding-right: 140px; /* Safeguards text from wrapping into logout bounds */
+            padding-left: 140px;
+        }
+
+        /* NEW STYLE: Minimalist Polished Logout Component Action */
+        .btn-logout-portal {
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            background-color: #ffffff;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.15s ease-in-out;
+        }
+
+        .btn-logout-portal:hover {
+            background-color: #fff1f1;
+            color: var(--danger);
+            border-color: #fca5a5;
+            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.08);
+        }
+
+        .btn-logout-portal:active {
+            transform: scale(0.97);
         }
 
         .master-control-bar {
@@ -197,21 +233,6 @@
         }
 
         .btn-add-profile:hover { background-color: #219653; }
-
-        .btn-logout-portal {
-            background-color: var(--danger);
-            color: white;
-            border: none;
-            padding: 11px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            height: 46px;
-        }
-
-        .btn-logout-portal:hover { background-color: #c0392b; }
 
         .client-list {
             display: flex;
@@ -316,7 +337,6 @@
             font-size: 0.9rem;
         }
 
-        /* REDEVELOPED: High-Speed Calendar Picker Button Layout Configuration */
         .picker-wrapper {
             position: relative;
             width: 40px;
@@ -339,7 +359,6 @@
             transform: scale(0.95);
         }
 
-        /* Masks native text parameters completely */
         .picker-wrapper input[type="date"] {
             position: absolute;
             top: 0;
@@ -472,6 +491,12 @@
             .sig-area { margin-top: 40px; display: flex; justify-content: space-between; font-size: 0.8rem; }
             .sig-line { border-top: 1px solid #000; width: 180px; text-align: center; padding-top: 5px; }
         }
+
+        /* Responsive override block specifically preventing logout compression artifacts */
+        @media (max-width: 768px) {
+            header h1 { padding-right: 0; padding-left: 0; margin-bottom: 50px; }
+            .btn-logout-portal { position: relative; top: 0; right: 0; margin: 10px auto; width: fit-content; }
+        }
     </style>
 </head>
 <body>
@@ -489,6 +514,8 @@
     <header>
         <h1>DML Family Accounting & Filing Tracker</h1>
         
+        <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()">🔒 Log Out</button>
+
         <div class="master-control-bar">
             <div class="global-input-group">
                 <label>Target Tracking Month</label>
@@ -504,8 +531,6 @@
             <div class="cloud-status-indicator" id="cloud-status">☁️ Cloud Connected</div>
             
             <button class="btn-print-master" onclick="printMasterSummaryPage()">🖨️ Print End-of-Month Master Summary</button>
-
-            <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()">🔒 Log Out</button>
         </div>
     </header>
 
@@ -730,7 +755,6 @@
         }
     }
 
-    // REDEVELOPED TURBO TRIGGER LOGIC: Seamless click redirection mapping
     function forceCalendarPickerTrigger(event, elementId) {
         event.preventDefault();
         event.stopPropagation();
@@ -796,7 +820,7 @@
         let rowsHTML = '';
 
         masterData.forEach(c => {
-            let bankCol = `<strong>Entries:</strong> ${c.bankEntryDate || '<span style="color:#b91c1c;">❌ Open</span>'}<br><strong>Filing:</strong> ${c.bankFilingDate || '<span style="color:#b91c1c;">❌ Open</span>'}`;
+            let bankCol = `return<strong>Entries:</strong> ${c.bankEntryDate || '<span style="color:#b91c1c;">❌ Open</span>'}<br><strong>Filing:</strong> ${c.bankFilingDate || '<span style="color:#b91c1c;">❌ Open</span>'}`;
 
             let dematCol = '<ul class="print-ul">';
             if(c.demats.length === 0) dematCol += '<li>No Accounts</li>';
