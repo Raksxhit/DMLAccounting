@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DML Accounting Tracker</title>
+    <!-- Firebase Cloud Integration Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -26,7 +27,6 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            /* RE-DESIGNED FONT STYLE: Upgraded to premium corporate geometric stack */
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
@@ -185,7 +185,7 @@
             display: none; 
         }
 
-        /* GEOMETRIC NAVIGATION BAR CANVASES STYLE */
+        /* GEOMETRIC NAVIGATION BAR CANVASES */
         header {
             position: fixed;
             top: 0;
@@ -210,7 +210,6 @@
             gap: 20px;
         }
 
-        /* RE-DESIGNED BRAND IDENTITY LOGO */
         header h1 {
             font-size: 1.45rem;
             font-weight: 800;
@@ -336,7 +335,6 @@
             align-items: center;
         }
 
-        /* RE-SCALE: Amplified demographic title parameter typography sizes */
         .client-title {
             font-size: 1.1rem;
             font-weight: 700;
@@ -402,7 +400,6 @@
             flex-grow: 1;
         }
 
-        /* RE-SCALE: Boosted date typing layout text block fonts */
         .date-input-container input[type="text"] {
             width: 100%;
             padding: 6px 12px;
@@ -450,7 +447,6 @@
             margin-bottom: 8px;
         }
 
-        /* RE-SCALE: Amplified broker layout account text tag sizes */
         .demat-name-input {
             font-weight: 700;
             font-size: 0.95rem;
@@ -487,28 +483,45 @@
 
         .sub-block-title { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em; }
 
-        .demat-fields-horizontal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        /* RE-DEVELOPED UNIFORM GRID SYMMETRY AND EQUAL INTERVAL SPACE CONFIGURATION */
+        .demat-fields-horizontal { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px; 
+            width: 100%;
+        }
 
-        .demat-fields-horizontal .mini-input-cell { display: flex; align-items: center; gap: 6px; }
+        .demat-fields-horizontal .mini-input-cell { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 4px; 
+            width: 100%;
+        }
         
-        /* RE-SCALE: Modified inline broker nomenclature tags label sizes */
-        .demat-fields-horizontal span { font-size: 0.8rem; color: #334155; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+        .demat-fields-horizontal span { 
+            font-size: 0.8rem; 
+            color: #334155; 
+            font-weight: 600; 
+            white-space: nowrap; 
+            flex-shrink: 0; 
+        }
 
         .notes-section { padding: 8px 16px 12px 16px; border-top: 1px solid #edf2f7; background: #fafafa; }
-        
-        /* RE-SCALE: Boosted remarks commentary textbox typography size dimensions */
         .notes-section input[type="text"] { width: 100%; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; }
 
-        /* EQUAL SIZE FAB MATRIX CONTROLLERS */
+        /* FIXED FAB HUB CONTAINER (HOVER BRIDGE RESTRICTION MATRIX Overhaul) */
         .admin-floating-hub {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            display: flex;
+            display: inline-flex;
             flex-direction: column-reverse;
             align-items: flex-end;
             gap: 12px;
             z-index: 99999;
+            width: auto;
+            height: auto;
         }
 
         .fab-trigger-gear {
@@ -523,6 +536,7 @@
             box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
             cursor: pointer;
             transition: all 0.3s ease;
+            z-index: 2;
         }
 
         .floating-menu-options-list {
@@ -533,10 +547,21 @@
             pointer-events: none;
             transform: translateY(15px);
             transition: all 0.2s ease;
+            z-index: 1;
         }
 
-        .admin-floating-hub:hover .floating-menu-options-list { opacity: 1; pointer-events: auto; transform: translateY(0); }
-        .admin-floating-hub:hover .fab-trigger-gear { background-color: var(--primary); transform: rotate(45deg); }
+        /* RE-STRUCTURED BRIDGE HOVER BOUNDS OVERRIDE RULE */
+        .fab-trigger-gear:hover + .floating-menu-options-list,
+        .admin-floating-hub:hover .floating-menu-options-list { 
+            opacity: 1; 
+            pointer-events: auto; 
+            transform: translateY(0); 
+        }
+        
+        .admin-floating-hub:hover .fab-trigger-gear { 
+            background-color: var(--primary); 
+            transform: rotate(45deg); 
+        }
 
         .action-sub-btn {
             background: white;
@@ -799,13 +824,13 @@
         }
     });
 
+    // Dynamic node mapping logic routines
     function updateDematName(clientId, dematId, value) {
         const client = masterData.find(c => c.id === clientId);
         const d = client?.demats.find(dm => dm.id === dematId);
         if (d) { d.name = value; saveState(); }
     }
 
-    // Direct initialization pipeline script arrays triggers
     function addDematAccount(clientId) {
         const client = masterData.find(c => c.id === clientId);
         if(client) {
