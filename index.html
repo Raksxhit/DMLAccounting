@@ -62,7 +62,7 @@
         }
 
         .login-box h2 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: var(--text-main);
             margin-bottom: 8px;
             font-weight: 700;
@@ -109,6 +109,105 @@
 
         .login-box button:hover { background-color: var(--primary-hover); }
 
+        /* CUSTOM IN-APP MODAL POPUP DIALOG WINDOW MODULES */
+        .dashboard-custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .dashboard-custom-modal.is-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content-box {
+            background: #ffffff;
+            padding: 28px;
+            border-radius: 16px;
+            width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.9);
+            transition: transform 0.2s ease-in-out;
+            text-align: left;
+        }
+
+        .dashboard-custom-modal.is-active .modal-content-box {
+            transform: scale(1);
+        }
+
+        .modal-content-box h3 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .modal-content-box p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 18px;
+        }
+
+        .modal-content-box input[type="text"], 
+        .modal-content-box input[type="password"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            outline: none;
+            background: #f8fafc;
+        }
+
+        .modal-content-box input:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+
+        .modal-action-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            color: #475569;
+        }
+
+        .modal-btn.btn-confirm {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+        .modal-btn.btn-confirm:hover { background-color: var(--primary-hover); }
+        .modal-btn.btn-danger-confirm {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+        }
+        .modal-btn.btn-danger-confirm:hover { background-color: #dc2626; }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -116,23 +215,25 @@
             display: none; 
         }
 
-        /* FIXED PREMIUM STYLIZED LOGO NAVBAR */
+        /* RE-DESIGNED CANVAS HEADER: Geometric architecture layout style */
         header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: var(--nav-height);
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background-color: rgba(255, 255, 255, 0.9);
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 16px 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 40px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
         }
 
         .header-left-cluster {
@@ -141,21 +242,21 @@
             gap: 24px;
         }
 
-        /* RE-DESIGNED: Elegant Technical-SaaS Typography Style */
+        /* STYLIZED EMBEDDED SINGLE COLOR DESIGNED TEXT LOGO */
         header h1 {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #0f172a;
             letter-spacing: -0.03em;
+            text-transform: uppercase;
+            position: relative;
         }
 
         .cloud-badge-animated {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #f1f5f9;
+            background: #ffffff;
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.75rem;
@@ -230,11 +331,11 @@
             font-weight: 700;
             color: var(--dark);
             width: 140px;
-            background: #f8fafc;
+            background: #ffffff;
             text-align: center;
             outline: none;
         }
-        .nav-month-container input:focus { border-color: var(--primary); background: #ffffff; }
+        .nav-month-container input:focus { border-color: var(--primary); }
 
         .btn-logout-portal {
             background: #ffffff;
@@ -258,8 +359,6 @@
             box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.08);
         }
 
-        .btn-logout-portal:active { transform: scale(0.95); }
-
         .client-list {
             display: flex;
             flex-direction: column;
@@ -268,7 +367,7 @@
             padding-bottom: 120px; 
         }
 
-        /* CONSOLIDATED INTERACTION FAB COMMAND CENTRE MENU Layout Configuration */
+        /* STABLE EQUAL WIDTH MENU FLYOUT CONFIGURATION */
         .admin-floating-hub {
             position: fixed;
             bottom: 30px;
@@ -320,17 +419,21 @@
             transform: rotate(90deg);
         }
 
+        /* UPDATED RULE: Standardized Equal Sized FAB action rows */
         .action-sub-btn {
             background: white;
             color: #334155;
             border: 1px solid var(--border-color);
-            padding: 12px 24px;
+            padding: 12px 0;
+            width: 190px; 
+            text-align: center;
             border-radius: 30px;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             white-space: nowrap;
@@ -343,15 +446,8 @@
             border-color: #0f172a;
         }
 
-        .action-sub-btn.btn-primary-action:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .action-sub-btn.btn-danger-action:hover {
-            background: var(--danger);
-            border-color: var(--danger);
-        }
+        .action-sub-btn.btn-primary-action:hover { background: var(--primary); border-color: var(--primary); }
+        .action-sub-btn.btn-danger-action:hover { background: var(--danger); border-color: var(--danger); }
 
         .client-card {
             background: var(--card-bg);
@@ -449,7 +545,6 @@
             background: #ffffff;
             transition: all 0.2s;
         }
-        .date-input-container input[type="text"]:focus { outline: none; border-color: var(--primary); }
 
         .picker-wrapper {
             position: relative;
@@ -566,13 +661,12 @@
             background-color: #fafafa;
             transition: all 0.2s;
         }
-        .notes-section input[type="text"]:focus { outline: none; border-color: var(--primary); background-color: #ffffff; }
 
         #print-mount { display: none; }
 
         @media print {
             body { background: white; color: black; padding: 0; margin: 0; }
-            .container, .notes-section, #login-overlay, .admin-floating-hub, header { display: none !important; }
+            .container, .notes-section, #login-overlay, .admin-floating-hub, header, .dashboard-custom-modal { display: none !important; }
             #print-mount { display: block !important; background: white; padding: 10px; width: 100%; }
             .master-print-title { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 3px double #000; }
             .master-print-title h2 { font-size: 1.4rem; text-transform: uppercase; }
@@ -580,21 +674,37 @@
             .print-table th, .print-table td { border: 1px solid #000; padding: 5px; text-align: left; vertical-align: top; }
             .print-table th { background-color: #f2f2f2 !important; font-weight: bold; }
             .print-ul { list-style: none; padding: 0; margin: 0; }
-            .print-ul li { margin-bottom: 3px; border-bottom: 1px dashed #ccc; padding-bottom: 2px; }
             .sig-area { margin-top: 40px; display: flex; justify-content: space-between; font-size: 0.8rem; }
             .sig-line { border-top: 1px solid #000; width: 180px; text-align: center; padding-top: 5px; }
-        }
-
-        @media (max-width: 768px) {
-            header { padding: 0 20px; flex-direction: column; height: auto; padding-bottom: 15px; }
-            .header-left-cluster { margin-top: 15px; }
-            .header-right-cluster { width: 100%; justify-content: space-between; margin-top: 10px; }
-            .client-list { margin-top: 180px; }
-            .btn-logout-portal { position: relative; top: 0; right: 0; }
         }
     </style>
 </head>
 <body>
+
+<!-- NEW MODAL PORTAL VIEW DIALOG BOXES FOR DASHBOARD WORKFLOWS -->
+<div class="dashboard-custom-modal" id="add-client-modal-overlay">
+    <div class="modal-content-box">
+        <h3>Register New Account</h3>
+        <p>Please enter the full legal identity name for this profile registry card:</p>
+        <input type="text" id="modal-client-name-field" placeholder="e.g., CHIRAG LAKHANI" onkeydown="if(event.key === 'Enter') confirmAddClientModalAction()" />
+        <div class="modal-action-row">
+            <button class="modal-btn" onclick="closeCustomModalWindow('add-client-modal-overlay')">Cancel</button>
+            <button class="modal-btn btn-confirm" onclick="confirmAddClientModalAction()">Create Account</button>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-custom-modal" id="reset-data-modal-overlay">
+    <div class="modal-content-box">
+        <h3>Reset Monthly Progress</h3>
+        <p>Warning: This action safely wipes all dates and remarks but keeps account rows intact. Please enter administration passkey code to run:</p>
+        <input type="password" id="modal-reset-passkey-field" placeholder="••••••" maxlength="6" onkeydown="if(event.key === 'Enter') confirmResetDataModalAction()" />
+        <div class="modal-action-row">
+            <button class="modal-btn" onclick="closeCustomModalWindow('reset-data-modal-overlay')">Cancel</button>
+            <button class="modal-btn btn-danger-confirm" onclick="confirmResetDataModalAction()">Reset Records</button>
+        </div>
+    </div>
+</div>
 
 <div id="login-overlay">
     <div class="login-box">
@@ -606,7 +716,6 @@
 </div>
 
 <div class="container" id="main-app-layout">
-    <!-- FROZEN STATIC HIGH-END WEB HEAD PLATFORM STRIP -->
     <header>
         <div class="header-left-cluster">
             <h1>DML Family Accounting & Filing Tracker</h1>
@@ -628,16 +737,15 @@
         </div>
     </header>
 
-    <!-- QUICK OPTIONS FLOATING CENTER MENU HUB -->
+    <!-- FLOATING HUB - Standardized Equal Sizes -->
     <div class="admin-floating-hub">
         <div class="fab-trigger-gear">
             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap='round' stroke-linejoin='round'><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2v.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </div>
         <div class="floating-menu-options-list">
-            <!-- RE-ENGINEERED UNIFIED TRIGGER FUNCTION FLOW MAPPING -->
-            <button class="action-sub-btn btn-primary-action" onclick="triggerClientAddPromptEngine()">➕ Add Client</button>
-            <button class="action-sub-btn" onclick="printMasterSummaryPage()">🖨️ Print Report Sheet</button>
-            <button class="action-sub-btn btn-danger-action" onclick="resetToSystemDefaultWithSecurity()">🧹 Reset Progress Dates</button>
+            <button class="action-sub-btn btn-primary-action" onclick="openCustomModalWindow('add-client-modal-overlay', 'modal-client-name-field')">➕ Add Client</button>
+            <button class="action-sub-btn" onclick="printMasterSummaryPage()">🖨️ Print Summary</button>
+            <button class="action-sub-btn btn-danger-action" onclick="openCustomModalWindow('reset-data-modal-overlay', 'modal-reset-passkey-field')">🧹 Reset Data</button>
         </div>
     </div>
 
@@ -689,6 +797,66 @@
         if(e.key === 'Enter') verifyAppMasterGateAccess();
     });
 
+    // CUSTOM APPS CONTROLLER VIEW INTERACTION REDIRECT CODES
+    function openCustomModalWindow(overlayId, focusId) {
+        document.getElementById(overlayId).classList.add('is-active');
+        if (focusId) setTimeout(() => document.getElementById(focusId).focus(), 100);
+    }
+
+    function closeCustomModalWindow(overlayId) {
+        document.getElementById(overlayId).classList.remove('is-active');
+    }
+
+    function confirmAddClientModalAction() {
+        const inputField = document.getElementById('modal-client-name-field');
+        const candidateName = inputField.value.trim().toUpperCase();
+        
+        if (!candidateName) {
+            alert("Validation Error: Account Name identity cannot be empty.");
+            return;
+        }
+
+        const uniqueId = Date.now();
+        masterData.push({
+            id: uniqueId,
+            name: candidateName,
+            bankEntryDate: '',
+            bankFilingDate: '',
+            internalNotes: '',
+            demats: [{ id: uniqueId + 1, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }]
+        });
+
+        renderDashboardHTML();
+        saveState();
+        inputField.value = '';
+        closeCustomModalWindow('add-client-modal-overlay');
+    }
+
+    function confirmResetDataModalAction() {
+        const passkeyField = document.getElementById('modal-reset-passkey-field');
+        if (passkeyField.value === "031097") {
+            masterData.forEach(client => {
+                client.bankEntryDate = '';
+                client.bankFilingDate = '';
+                client.internalNotes = '';
+                if(client.demats) {
+                    client.demats.forEach(d => {
+                        d.entryLedger = ''; d.entryContract = ''; d.entryPnl = '';
+                        d.fileLedger = ''; d.fileContract = ''; d.filePnl = '';
+                    });
+                }
+            });
+            renderDashboardHTML();
+            saveState();
+            passkeyField.value = '';
+            closeCustomModalWindow('reset-data-modal-overlay');
+            alert("Monthly tracking parameters successfully reset.");
+        } else {
+            alert("Authentication Failed: Invalid admin key code credentials.");
+            passkeyField.value = '';
+        }
+    }
+
     function downloadLatestCloudData() {
         database.ref('tracker_state').once('value').then((snapshot) => {
             const cloudData = snapshot.val();
@@ -702,7 +870,9 @@
     }
 
     document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' || event.keyCode === 27 || event.key === 'Enter' || event.keyCode === 13) {
+        if (event.key === 'Escape' || event.keyCode === 27) {
+            closeCustomModalWindow('add-client-modal-overlay');
+            closeCustomModalWindow('reset-data-modal-overlay');
             if (document.activeElement && (document.activeElement.tagName === 'INPUT')) {
                 document.activeElement.blur(); 
             }
@@ -712,7 +882,6 @@
     function saveState() {
         const badge = document.getElementById('cloud-status-badge');
         const text = document.getElementById('cloud-status-text');
-        
         badge.classList.add('is-syncing');
         text.innerText = "Syncing Engine...";
 
@@ -776,31 +945,6 @@
         }
 
         return `${day}/${month}/${year}`;
-    }
-
-    // MODAL ADD PROMPT INTERFACE ENGINE
-    function triggerClientAddPromptEngine() {
-        const modalNameInput = prompt("Enter the new client identity profile full name:");
-        if (modalNameInput === null) return; 
-        
-        const candidateName = modalNameInput.trim().toUpperCase();
-        if (!candidateName) {
-            alert("Registration Cancelled: Name entry cannot be blank.");
-            return;
-        }
-
-        const uniqueId = Date.now();
-        masterData.push({
-            id: uniqueId,
-            name: candidateName,
-            bankEntryDate: '',
-            bankFilingDate: '',
-            internalNotes: '',
-            demats: [{ id: uniqueId + 1, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }]
-        });
-
-        renderDashboardHTML();
-        saveState();
     }
 
     function removeEntireClientProfile(clientId) {
@@ -876,7 +1020,6 @@
 
     function handleInputSync(clientId, dematId, key, rawValue, isDemat = false) {
         let parsedValue = parseSmartAccountingDate(rawValue);
-        
         if (isDemat) {
             const client = masterData.find(c => c.id === clientId);
             const d = client?.demats.find(dm => dm.id === dematId);
@@ -898,7 +1041,6 @@
         if (!dateVal) return;
         const [yyyy, mm, dd] = dateVal.split('-');
         const formattedStr = `${dd}/${mm}/${yyyy}`;
-        
         if (isDemat) {
             const client = masterData.find(c => c.id === clientId);
             const d = client?.demats.find(dm => dm.id === dematId);
@@ -922,7 +1064,6 @@
 
         masterData.forEach(c => {
             let bankCol = `<strong>Entries:</strong> ${c.bankEntryDate || '<span style="color:#b91c1c;">❌ Open</span>'}<br><strong>Filing:</strong> ${c.bankFilingDate || '<span style="color:#b91c1c;">❌ Open</span>'}`;
-
             let dematCol = '<ul class="print-ul">';
             if(!c.demats || c.demats.length === 0) dematCol += '<li>No Accounts</li>';
             else {
@@ -1120,33 +1261,6 @@
             `;
             container.innerHTML += cardHTML;
         });
-    }
-
-    function resetToSystemDefaultWithSecurity() {
-        const tokenInput = prompt("Enter Administration Reset Access Key Code to continue:");
-        if (tokenInput === null) return;
-        if (tokenInput === "031097") {
-            masterData.forEach(client => {
-                client.bankEntryDate = '';
-                client.bankFilingDate = '';
-                client.internalNotes = '';
-                if(client.demats) {
-                    client.demats.forEach(d => {
-                        d.entryLedger = '';
-                        d.entryContract = '';
-                        d.entryPnl = '';
-                        d.fileLedger = '';
-                        d.fileContract = '';
-                        d.filePnl = '';
-                    });
-                }
-            });
-            renderDashboardHTML();
-            saveState();
-            alert("Monthly tracking cycles reset. Account titles and broker trees preserved successfully.");
-        } else {
-            alert("Security Access Denied: Invalid credentials.");
-        }
     }
 </script>
 
