@@ -318,7 +318,7 @@
             padding-bottom: 120px; 
         }
 
-        /* RE-ENGINEERED: High-Density Table Layout Structure */
+        /* High-Density Table Layout Structure */
         .client-card {
             background: var(--card-bg);
             border-radius: 8px;
@@ -359,7 +359,7 @@
         /* Compact Dense Horizontal Accounting Grid Mapping */
         .work-grid {
             display: grid;
-            grid-template-columns: 1.2fr 2.8fr;
+            grid-template-columns: 1fr 3fr;
             padding: 0;
             background: #ffffff;
         }
@@ -456,23 +456,39 @@
             width: 40%;
         }
 
-        .btn-delete-demat { background: transparent; color: #94a3b8; border: none; cursor: pointer; font-size: 0.75rem; }
+        /* RE-DESIGNED HOVER MECHANISM: Clean transition to alert crimson red */
+        .btn-delete-demat { 
+            background: transparent; 
+            color: #64748b; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-delete-demat:hover { 
+            color: #ffffff;
+            background-color: var(--danger); 
+        }
 
         .demat-row-block {
             display: grid;
             grid-template-columns: 80px 1fr;
             gap: 10px;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .demat-row-block:last-child { margin-bottom: 0; }
 
         .sub-block-title { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
 
-        .demat-fields-horizontal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .demat-fields-horizontal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 
-        .demat-fields-horizontal .mini-input-cell { display: flex; align-items: center; gap: 4px; }
-        .demat-fields-horizontal span { font-size: 0.72rem; color: #64748b; width: 22px; }
+        /* RE-DEVELOPED ADAPTIVE GRID HEAD LABELS SIZE WIDTHS */
+        .demat-fields-horizontal .mini-input-cell { display: flex; align-items: center; gap: 6px; }
+        .demat-fields-horizontal span { font-size: 0.72rem; color: #475569; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
         .notes-section { padding: 6px 16px 10px 16px; border-top: 1px solid #edf2f7; background: #fafafa; }
         .notes-section input[type="text"] { width: 100%; padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.82rem; }
@@ -848,7 +864,7 @@
             if(!c.demats || c.demats.length === 0) dematCol += '<li>None</li>';
             else {
                 c.demats.forEach(d => {
-                    dematCol += `<li><strong>${d.name}</strong><br>Ent &rarr; L:${d.entryLedger || '—'}|C:${d.entryContract || '—'}|P:${d.entryPnl || '—'}<br>Fil &rarr; L:${d.fileLedger || '—'}|C:${d.fileContract || '—'}|P:${d.filePnl || '—'}</li>`;
+                    dematCol += `<li><strong>${d.name}</strong><br>Ent &rarr; Ledger:${d.entryLedger || '—'}|Contract Notes:${d.entryContract || '—'}|P&L:${d.entryPnl || '—'}<br>Fil &rarr; Ledger:${d.fileLedger || '—'}|Contract Notes:${d.fileContract || '—'}|P&L:${d.filePnl || '—'}</li>`;
                 });
             }
             dematCol += '</ul>';
@@ -858,6 +874,7 @@
         window.print();
     }
 
+    // UPDATED DEMAT HTML STRUCTURE GENERATION FOR COMPACT horiz GRID ROW TRACKERS
     function renderDashboardHTML() {
         const container = document.getElementById('client-container');
         container.innerHTML = '';
@@ -877,24 +894,24 @@
                         <div class="demat-card-item">
                             <div class="demat-card-header">
                                 <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
-                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove</button>
+                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove Broker</button>
                             </div>
                             
                             <div class="demat-row-block">
                                 <div class="sub-block-title">📊 Entries</div>
                                 <div class="demat-fields-horizontal">
-                                    <div class="mini-input-cell"><span>L:</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryLedger" class="${eLClass}" value="${d.entryLedger}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')"><input type="date" id="pkr-${client.id}-${d.id}-entryLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" /></div></div></div>
-                                    <div class="mini-input-cell"><span>C:</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryContract" class="${eCClass}" value="${d.entryContract}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')"><input type="date" id="pkr-${client.id}-${d.id}-entryContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" /></div></div></div>
-                                    <div class="mini-input-cell"><span>P:</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryPnl" class="${ePClass}" value="${d.entryPnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')"><input type="date" id="pkr-${client.id}-${d.id}-entryPnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>Ledger</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryLedger" class="${eLClass}" value="${d.entryLedger}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')"><input type="date" id="pkr-${client.id}-${d.id}-entryLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>Contract Notes</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryContract" class="${eCClass}" value="${d.entryContract}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')"><input type="date" id="pkr-${client.id}-${d.id}-entryContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>P&L</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryPnl" class="${ePClass}" value="${d.entryPnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')"><input type="date" id="pkr-${client.id}-${d.id}-entryPnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /></div></div></div>
                                 </div>
                             </div>
 
                             <div class="demat-row-block">
                                 <div class="sub-block-title">📁 Filing</div>
                                 <div class="demat-fields-horizontal">
-                                    <div class="mini-input-cell"><span>L:</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-fileLedger" class="${fLClass}" value="${d.fileLedger}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')"><input type="date" id="pkr-${client.id}-${d.id}-fileLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" /></div></div></div>
-                                    <div class="mini-input-cell"><span>C:</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-fileContract" class="${fCClass}" value="${d.fileContract}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')"><input type="date" id="pkr-${client.id}-${d.id}-fileContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" /></div></div></div>
-                                    <div class="mini-input-cell"><span>P:</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-filePnl" class="${fPClass}" value="${d.filePnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')"><input type="date" id="pkr-${client.id}-${d.id}-filePnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>Ledger</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-fileLedger" class="${fLClass}" value="${d.fileLedger}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')"><input type="date" id="pkr-${client.id}-${d.id}-fileLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>Contract Notes</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-fileContract" class="${fCClass}" value="${d.fileContract}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')"><input type="date" id="pkr-${client.id}-${d.id}-fileContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>P&L</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-filePnl" class="${fPClass}" value="${d.filePnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')"><input type="date" id="pkr-${client.id}-${d.id}-filePnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /></div></div></div>
                                 </div>
                             </div>
                         </div>
