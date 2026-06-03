@@ -36,7 +36,7 @@
             line-height: 1.4;
         }
 
-        /* 2. Unified 0.7s password error and vibration animation */
+        /* Unified 0.7s password error and vibration animation */
         @keyframes vibrateRed {
             0% { transform: translateX(0); border-color: var(--danger); box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
             15% { transform: translateX(-6px); border-color: var(--danger); }
@@ -125,7 +125,6 @@
 
         .header-left-cluster { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; flex: 1; min-width: 250px; }
         
-        /* 1. All device friendly title line rule */
         header h1 {
             font-size: clamp(1rem, 3.5vw, 1.3rem);
             font-weight: 800; color: #ffffff; letter-spacing: -0.02em;
@@ -212,39 +211,56 @@
         .notes-section span { font-size: 0.88rem; font-weight: 700; color: #475569; }
         .notes-section input[type="text"] { flex: 1; min-width: 200px; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; }
 
-        /* 6. Precision Optimized FAB configuration rules */
+        /* --- THE FIXED FAB HOVER CSS --- */
         .admin-floating-hub {
-            position: fixed; bottom: 30px; right: 30px; display: inline-flex;
-            flex-direction: column-reverse; align-items: flex-end; gap: 12px;
-            z-index: 99999; width: auto; height: auto;
-            pointer-events: none; /* Prevents invisible bounding box hover triggers */
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            z-index: 99999;
+            width: 56px; 
+            height: 56px;
         }
 
         .fab-trigger-gear {
-            width: 56px; height: 56px; background-color: #0f172a; border-radius: 50%;
+            width: 100%; 
+            height: 100%; 
+            background-color: #0f172a; 
+            border-radius: 50%;
             display: flex; justify-content: center; align-items: center; color: white;
             box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); cursor: pointer;
-            transition: all 0.3s ease; z-index: 2; pointer-events: auto;
+            transition: all 0.3s ease; position: relative; z-index: 2;
         }
 
         .floating-menu-options-list {
-            display: flex; flex-direction: column; gap: 8px; opacity: 0;
-            pointer-events: none; transform: translateY(15px); transition: all 0.2s ease; z-index: 1;
+            position: absolute;
+            bottom: 70px; /* Pushes the menu directly above the gear */
+            right: 0;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 8px; 
+            
+            /* Visibility completely hides the bounding box from your mouse */
+            opacity: 0;
+            visibility: hidden; 
+            transform: translateY(10px); 
+            transition: all 0.2s ease; z-index: 1;
         }
 
-        .fab-trigger-gear:hover + .floating-menu-options-list,
-        .floating-menu-options-list:hover { 
-            opacity: 1; pointer-events: auto; transform: translateY(0); 
+        /* Trigger hover ONLY when hitting the gear or the active menu */
+        .admin-floating-hub:hover .floating-menu-options-list { 
+            opacity: 1; 
+            visibility: visible; 
+            transform: translateY(0); 
         }
         
-        .fab-trigger-gear:hover { background-color: var(--primary); transform: rotate(45deg); }
-        .floating-menu-options-list:hover ~ .fab-trigger-gear { background-color: var(--primary); transform: rotate(45deg); }
+        .admin-floating-hub:hover .fab-trigger-gear { 
+            background-color: var(--primary); 
+            transform: rotate(45deg); 
+        }
 
         .action-sub-btn {
             background: white; color: #334155; border: 1px solid #cbd5e1; padding: 12px 0;
             width: 170px; text-align: center; border-radius: 25px; font-size: 0.88rem;
             font-weight: 600; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; gap: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); pointer-events: auto;
+            justify-content: center; gap: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
         }
 
         .action-sub-btn:hover { background: #0f172a; color: white; border-color: #0f172a; }
@@ -373,9 +389,19 @@
     let globalReportingMonth = 'June 2026';
     let masterData = [];
     let isUserTyping = false;
-    let pendingSecureAction = null; // Stores action awaiting password
+    let pendingSecureAction = null; 
 
-    // Track typing focus to prevent real-time sync from overwriting active inputs
+    // --- ESCAPE KEY LISTENER ---
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            // Find any modal that currently has the 'is-active' class and remove it
+            const activeModals = document.querySelectorAll('.dashboard-custom-modal.is-active');
+            activeModals.forEach(modal => {
+                modal.classList.remove('is-active');
+            });
+        }
+    });
+
     document.addEventListener('focusin', (e) => { if (e.target.tagName === 'INPUT') isUserTyping = true; });
     document.addEventListener('focusout', (e) => { if (e.target.tagName === 'INPUT') isUserTyping = false; });
 
@@ -387,16 +413,14 @@
         }
     });
 
-    // 2. Vibration Error Trigger 
     function triggerErrorVibration(elementId) {
         const el = document.getElementById(elementId);
         el.classList.remove('shake-error');
-        void el.offsetWidth; // Force Reflow
+        void el.offsetWidth; 
         el.classList.add('shake-error');
         if(navigator.vibrate) navigator.vibrate(700);
     }
 
-    // 2. Auto-Login Listener
     document.getElementById('app-passkey-input').addEventListener('input', function(e) {
         if(e.target.value === "031097") verifyAppMasterGateAccess(true);
     });
@@ -429,7 +453,6 @@
         document.getElementById(overlayId).classList.remove('is-active');
     }
 
-    // 3. Centralized Secure Authentication Gate
     function requestSecureAuth(title, callback) {
         document.getElementById('secure-auth-title').innerText = title;
         document.getElementById('secure-auth-input').value = '';
@@ -484,7 +507,6 @@
         }
     }
 
-    // 7. Realtime Sync configured with .on()
     function downloadLatestCloudData() {
         database.ref('tracker_state').on('value', (snapshot) => {
             const cloudData = snapshot.val();
@@ -493,7 +515,6 @@
                 globalReportingMonth = cloudData.globalReportingMonth || 'June 2026';
             }
             document.getElementById('global-month-input').value = globalReportingMonth;
-            // Only force render if user isn't typing, preserving cursor focus
             if (!isUserTyping) renderDashboardHTML(); 
         });
     }
@@ -541,7 +562,6 @@
         return (parseInt(day) > 31 || parseInt(month) > 12) ? inputValue.substring(0, 10) : `${day}/${month}/${year}`;
     }
 
-    // 3. Password protected Profile Deletion
     function removeEntireClientProfile(clientId) {
         requestSecureAuth("Confirm Deleting Client Profile", () => {
             masterData = masterData.filter(c => c.id !== clientId);
@@ -584,7 +604,6 @@
         if (targetedInput && typeof targetedInput.showPicker === 'function') targetedInput.showPicker();
     }
 
-    // 3. Password protected Broker Deletion
     function removeDematAccount(clientId, dematId) {
         requestSecureAuth("Confirm Removing Broker Account", () => {
             const client = masterData.find(c => c.id === clientId);
@@ -692,7 +711,6 @@
             const bEntryClass = client.bankEntryDate?.trim() !== '' ? 'has-date' : 'empty-date';
             const bFileClass = client.bankFilingDate?.trim() !== '' ? 'has-date' : 'empty-date';
             
-            // 4. Added "Remarks:" text prefix for the notes section
             const cardHTML = `
                 <div class="client-card" id="client-row-${client.id}">
                     <div class="client-header">
