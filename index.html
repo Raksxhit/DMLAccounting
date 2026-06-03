@@ -7,122 +7,99 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-light: #64748b;
-            --border-color: #cbd5e1;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --nav-height: 70px;
-        }
+        :root { --primary: #2563eb; --danger: #ef4444; --success: #10b981; --dark: #0f172a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+        body { background-color: #f1f5f9; color: var(--dark); padding: 0; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+        /* VIBRATE ANIMATION */
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .vibrate { animation: shake 0.35s ease-in-out; border-color: var(--danger) !important; box-shadow: 0 0 5px var(--danger); }
 
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 0; line-height: 1.4; }
+        /* LOCKSCREEN */
+        #login-overlay { position: fixed; top:0; left:0; width: 100vw; height: 100vh; background: var(--dark); display: flex; justify-content: center; align-items: center; z-index: 999999; }
+        .login-box { background: #fff; padding: 30px; border-radius: 16px; width: 90%; max-width: 320px; text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 1.5rem; letter-spacing: 5px; }
 
-        /* PORTAL LOCKSCREEN */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0f172a; display: flex; justify-content: center; align-items: center; z-index: 999999; flex-direction: column; }
-        .login-box { background: #ffffff; padding: 35px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); text-align: center; width: 90%; max-width: 360px; }
-        .login-box input[type="password"] { width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1.25rem; text-align: center; letter-spacing: 6px; background-color: #f8fafc; transition: all 0.2s; }
+        /* HEADER */
+        header { position: fixed; top:0; width: 100%; height: 60px; background: #0f172a; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 9999; }
+        header h1 { font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* SHAKE ANIMATION FOR ERRORS */
-        .shake { animation: shake 0.7s cubic-bezier(.36,.07,.19,.97) both; border-color: var(--danger) !important; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
-
-        /* MODAL STYLES */
-        .dashboard-custom-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 100000; opacity: 0; pointer-events: none; transition: all 0.2s; padding: 16px; }
-        .dashboard-custom-modal.is-active { opacity: 1; pointer-events: auto; }
-        .modal-content-box { background: #ffffff; padding: 24px; border-radius: 12px; width: 100%; max-width: 380px; box-shadow: 0 20px 25px rgba(0,0,0,0.15); }
-        .modal-action-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
-        .modal-btn { padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: #ffffff; }
-        .btn-confirm { background: var(--primary); color: white; border: none; }
-        .btn-danger-confirm { background: var(--danger); color: white; border: none; }
-
-        .container { max-width: 1550px; margin: 0 auto; padding: 0 15px; display: none; }
-
-        /* RESPONSIVE HEADER */
-        header { position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height); background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        header h1 { font-size: clamp(0.9rem, 4vw, 1.3rem); font-weight: 800; color: #ffffff; white-space: nowrap; }
+        /* RESPONSIVE LAYOUT */
+        .container { margin-top: 80px; padding: 0 10px; display: none; }
+        .client-list { display: flex; flex-direction: column; gap: 15px; padding-bottom: 100px; }
+        .client-card { background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .client-header { padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
+        .client-title { font-size: 0.95rem; font-weight: 700; border: none; width: 60%; }
         
-        .header-right-cluster { display: flex; align-items: center; gap: 10px; }
-        .nav-month-container input { padding: 6px; border-radius: 6px; border: none; font-size: 0.8rem; width: 100px; text-align: center; }
-        .btn-logout-portal { background: #1e293b; color: #94a3b8; border: 1px solid #334155; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .work-grid { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 12px; }
+        @media (min-width: 768px) { .work-grid { grid-template-columns: 1fr 2fr; } }
 
-        .client-list { display: flex; flex-direction: column; gap: 16px; margin-top: calc(var(--nav-height) + 20px); padding-bottom: 100px; }
-        .client-card { background: var(--card-bg); border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; }
-        .client-header { background: #f8fafc; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .client-title { font-size: 1rem; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; }
-
-        .work-grid { display: grid; grid-template-columns: 1fr 2fr; padding: 0; }
-        .work-section { padding: 12px; border-right: 1px solid #e2e8f0; }
-        .work-section h4 { font-size: 0.75rem; margin-bottom: 10px; color: #64748b; text-transform: uppercase; }
-        
-        .compact-input-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .work-section h4 { font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-bottom: 8px; }
+        .compact-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
         .compact-input-row label { font-size: 0.8rem; width: 50px; font-weight: 600; }
-        .date-input-container { display: flex; align-items: center; gap: 4px; flex-grow: 1; }
-        .date-input-container input { width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; }
+        .date-input-container { display: flex; flex-grow: 1; gap: 4px; }
+        input[type="text"] { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem; }
+        .picker-wrapper { width: 30px; height: 30px; border: 1px solid #ddd; border-radius: 4px; background: #eee; cursor: pointer; }
+        
+        .demat-wrapper { display: flex; flex-direction: column; gap: 8px; }
+        .demat-card-item { background: #f8fafc; padding: 10px; border-radius: 6px; }
+        .demat-fields-horizontal { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+        .mini-input-cell { display: flex; flex-direction: column; font-size: 0.7rem; }
+        
+        .notes-section { padding: 10px; display: flex; align-items: center; gap: 8px; border-top: 1px solid #f1f5f9; }
+        .notes-section label { font-size: 0.8rem; font-weight: 700; }
 
-        .notes-section { padding: 10px 16px; border-top: 1px solid #edf2f7; display: flex; align-items: center; gap: 10px; }
-        .notes-section label { font-weight: 600; font-size: 0.85rem; }
-        .notes-section input { flex-grow: 1; padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px; }
-
-        /* FAB MENU */
-        .admin-floating-hub { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 12px; z-index: 9999; }
-        .fab-trigger-gear { width: 50px; height: 50px; background: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.3s; }
-        .floating-menu-options-list { display: flex; flex-direction: column; gap: 8px; opacity: 0; pointer-events: none; transform: translateY(10px); transition: 0.2s; }
-        .admin-floating-hub:hover .floating-menu-options-list { opacity: 1; pointer-events: auto; transform: translateY(0); }
-        .action-sub-btn { background: white; border: 1px solid #cbd5e1; padding: 10px 15px; border-radius: 20px; font-weight: 600; cursor: pointer; width: 150px; }
-        .btn-danger-action:hover { background: var(--danger); color: white; }
-
-        /* RESPONSIVE TABLET/MOBILE OVERRIDES */
-        @media (max-width: 800px) { .work-grid { grid-template-columns: 1fr; } .work-section { border-right: none; border-bottom: 1px solid #e2e8f0; } }
+        /* FAB HUB */
+        .admin-floating-hub { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        .fab-trigger-gear { width: 50px; height: 50px; background: #0f172a; border-radius: 50%; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .floating-menu-options-list { position: absolute; bottom: 60px; right: 0; display: none; flex-direction: column; gap: 8px; }
+        .admin-floating-hub:hover .floating-menu-options-list { display: flex; }
+        .action-sub-btn { padding: 10px 20px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; width: 150px; text-align: center; font-weight: 600; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-<div id="login-overlay">
-    <div class="login-box">
-        <h2>Security Authentication</h2>
-        <input type="password" id="app-passkey-input" placeholder="••••••" maxlength="6" autofocus oninput="handleRealtimePasswordAutoEntry(this.value)" />
+<div class="dashboard-custom-modal" id="add-client-modal-overlay">
+    <div class="modal-content-box">
+        <h3>Add Client</h3>
+        <input type="text" id="modal-client-name-field" placeholder="Client Name" />
+        <div class="modal-action-row">
+            <button class="modal-btn" onclick="closeCustomModalWindow('add-client-modal-overlay')">Cancel</button>
+            <button class="modal-btn btn-confirm" onclick="confirmAddClientModalAction()">OK</button>
+        </div>
     </div>
 </div>
 
-<div class="dashboard-custom-modal" id="add-client-modal-overlay">
+<div class="dashboard-custom-modal" id="secure-pass-modal-overlay">
     <div class="modal-content-box">
-        <h3>Register New Account</h3>
-        <input type="text" id="modal-client-name-field" placeholder="Enter Full Name" />
+        <h3 id="modal-title">Enter Passkey</h3>
+        <input type="password" id="modal-passkey-field" placeholder="••••••" />
         <div class="modal-action-row">
-            <button class="modal-btn" onclick="closeCustomModalWindow('add-client-modal-overlay')">Cancel</button>
-            <button class="modal-btn btn-confirm" onclick="confirmAddClientModalAction()">Create</button>
+            <button class="modal-btn" onclick="closeCustomModalWindow('secure-pass-modal-overlay')">Cancel</button>
+            <button class="modal-btn btn-danger-confirm" id="modal-confirm-btn">Confirm</button>
         </div>
+    </div>
+</div>
+
+<div id="login-overlay">
+    <div class="login-box">
+        <h2>DML Tracker</h2>
+        <input type="password" id="app-passkey-input" placeholder="••••••" maxlength="6" autofocus />
     </div>
 </div>
 
 <div class="container" id="main-app-layout">
     <header>
-        <div class="header-left-cluster">
-            <h1>DML Accounting Tracker</h1>
-        </div>
-        <div class="header-right-cluster">
-            <div class="nav-month-container">
-                <input type="text" id="global-month-input" onchange="updateGlobalMonth(this.value)">
-            </div>
-            <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()">🔒</button>
-        </div>
+        <h1>DML Accounting Tracker</h1>
+        <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()">🔒</button>
     </header>
 
     <div class="admin-floating-hub">
         <div class="fab-trigger-gear">⚙️</div>
         <div class="floating-menu-options-list">
-            <button class="action-sub-btn" onclick="openCustomModalWindow('add-client-modal-overlay', 'modal-client-name-field')">Add Client</button>
+            <button class="action-sub-btn" onclick="openCustomModalWindow('add-client-modal-overlay')">Add Client</button>
             <button class="action-sub-btn" onclick="printMasterSummaryPage()">Print Summary</button>
-            <button class="action-sub-btn btn-danger-action" onclick="openCustomModalWindow('reset-data-modal-overlay')">Reset Data</button>
+            <button class="action-sub-btn" onclick="requestSecureAction('reset')">Reset Data</button>
         </div>
     </div>
 
@@ -130,30 +107,117 @@
 </div>
 
 <script>
-    // --- Logic Improvements ---
-    function handleRealtimePasswordAutoEntry(val) {
-        if (val.length === 6) {
-            if (val === "031097") {
-                verifyAppMasterGateAccess();
-            } else {
-                document.getElementById('app-passkey-input').classList.add('shake');
-                setTimeout(() => document.getElementById('app-passkey-input').classList.remove('shake'), 700);
-            }
+    const database = firebase.database();
+    let masterData = [];
+
+    // AUTO-LOGIN LOGIC
+    document.getElementById('app-passkey-input').addEventListener('input', function(e) {
+        if (e.target.value === "031097") {
+            sessionStorage.setItem('dml_authorized_session', 'true');
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-app-layout').style.display = 'block';
+            downloadLatestCloudData();
+        } else if (e.target.value.length === 6) {
+            e.target.classList.add('vibrate');
+            setTimeout(() => e.target.classList.remove('vibrate'), 700);
+            e.target.value = '';
         }
+    });
+
+    // SECURITY MODAL HANDLERS
+    let pendingAction = { type: '', clientId: null, dematId: null };
+    function requestSecureAction(type, clientId, dematId) {
+        pendingAction = { type, clientId, dematId };
+        document.getElementById('modal-title').innerText = "Enter Passkey";
+        openCustomModalWindow('secure-pass-modal-overlay', 'modal-passkey-field');
     }
 
-    // --- Remarks Realtime Update ---
-    // Added onblur to the input in renderDashboardHTML
-    // Example: <input type="text" onblur="handleRemarksRealtimeCloudCommit(${client.id}, this.value)" ... />
-    function handleRemarksRealtimeCloudCommit(clientId, val) {
-        const target = masterData.find(c => c.id == clientId);
-        if(target) {
-            target.internalNotes = val;
-            saveState();
+    document.getElementById('modal-confirm-btn').onclick = function() {
+        const pass = document.getElementById('modal-passkey-field').value;
+        if(pass === "031097") {
+            if(pendingAction.type === 'deleteProfile') deleteProfile(pendingAction.clientId);
+            if(pendingAction.type === 'deleteDemat') deleteDemat(pendingAction.clientId, pendingAction.dematId);
+            if(pendingAction.type === 'reset') resetData();
+            document.getElementById('modal-passkey-field').value = '';
+            closeCustomModalWindow('secure-pass-modal-overlay');
+        } else {
+            document.getElementById('modal-passkey-field').classList.add('vibrate');
+            setTimeout(() => document.getElementById('modal-passkey-field').classList.remove('vibrate'), 700);
+            document.getElementById('modal-passkey-field').value = '';
         }
+    };
+
+    // UI/SYNC LOGIC
+    function saveState() {
+        database.ref('tracker_state').set({ masterData: masterData });
     }
 
-    // ... (rest of your logic with added verification modals for delete functions) ...
+    function renderDashboardHTML() {
+        const container = document.getElementById('client-container');
+        container.innerHTML = '';
+        masterData.forEach(client => {
+            let dematsHTML = '';
+            client.demats.forEach(d => {
+                dematsHTML += `
+                    <div class="demat-card-item">
+                        <div class="demat-card-header">
+                            <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
+                            <button class="btn-delete-demat" onclick="requestSecureAction('deleteDemat', ${client.id}, ${d.id})">Remove</button>
+                        </div>
+                        <div class="demat-row-block">
+                            <div class="sub-block-title">📊 Entries</div>
+                            <div class="demat-fields-horizontal">
+                                <div class="mini-input-cell"><span>Ledger</span><input type="text" value="${d.entryLedger}" onchange="handleDematSync(${client.id}, ${d.id}, 'entryLedger', this.value)" /></div>
+                                <div class="mini-input-cell"><span>Contract Notes</span><input type="text" value="${d.entryContract}" onchange="handleDematSync(${client.id}, ${d.id}, 'entryContract', this.value)" /></div>
+                                <div class="mini-input-cell"><span>P&L</span><input type="text" value="${d.entryPnl}" onchange="handleDematSync(${client.id}, ${d.id}, 'entryPnl', this.value)" /></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML += `
+                <div class="client-card">
+                    <div class="client-header">
+                        <input type="text" class="client-title" value="${client.name}" onchange="updateName(${client.id}, this.value)" />
+                        <button class="btn-delete-client" onclick="requestSecureAction('deleteProfile', ${client.id})">Delete Profile</button>
+                    </div>
+                    <div class="work-grid">
+                        <div class="work-section">
+                            <h4>Bank Book</h4>
+                            <div class="compact-input-row"><label>Entries:</label><input type="text" value="${client.bankEntryDate}" onchange="handleSync(${client.id}, 'bankEntryDate', this.value)" /></div>
+                            <div class="compact-input-row"><label>Filing:</label><input type="text" value="${client.bankFilingDate}" onchange="handleSync(${client.id}, 'bankFilingDate', this.value)" /></div>
+                        </div>
+                        <div class="work-section">
+                            <h4>Demat Tracker</h4>
+                            <div class="demat-wrapper">${dematsHTML}</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <label>Remarks:</label>
+                        <input type="text" value="${client.internalNotes}" oninput="handleRemarks(${client.id}, this.value)" />
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Sync helpers
+    function handleRemarks(cid, val) { 
+        const c = masterData.find(x => x.id == cid); 
+        c.internalNotes = val; 
+        saveState(); 
+    }
+    function handleDematSync(cid, did, key, val) { 
+        const c = masterData.find(x => x.id == cid); 
+        const d = c.demats.find(y => y.id == did); 
+        d[key] = val; 
+        saveState(); 
+    }
+    function handleSync(cid, key, val) { 
+        masterData.find(x => x.id == cid)[key] = val; 
+        saveState(); 
+    }
+    // ... Add other helper functions like render, download, etc.
 </script>
 </body>
 </html>
