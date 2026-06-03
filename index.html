@@ -4,33 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Accounting Master Dashboard</title>
+    <!-- Firebase Cloud Integration Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
-            --bg-color: #f4f7fa;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-main: #2c3e50;
-            --text-light: #7f8c8d;
+            --text-main: #0f172a;
+            --text-light: #64748b;
             --border-color: #e2e8f0;
-            --primary: #3498db;
-            --success: #2ecc71;
-            --warning: #f1c40f;
-            --danger: #e74c3c;
-            --dark: #1a2a3a;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --nav-height: 80px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding: 20px;
+            padding: 0;
             line-height: 1.5;
         }
 
@@ -41,108 +44,126 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #1a2a3a;
+            background-color: #0f172a;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 99999;
+            z-index: 999999;
             flex-direction: column;
         }
 
         .login-box {
             background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             text-align: center;
-            width: 350px;
+            width: 360px;
         }
 
         .login-box h2 {
-            font-size: 1.4rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-weight: 700;
         }
 
         .login-box p {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-            margin-bottom: 20px;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 24px;
         }
 
         .login-box input[type="password"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 1.2rem;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1.25rem;
             text-align: center;
-            letter-spacing: 4px;
-            margin-bottom: 15px;
+            letter-spacing: 6px;
+            margin-bottom: 16px;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        .login-box input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         .login-box button {
             width: 100%;
             padding: 12px;
-            background-color: #3498db;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
-        .login-box button:hover { background-color: #2980b9; }
+        .login-box button:hover { background-color: var(--primary-hover); }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            position: relative;
+            padding: 0 24px;
             display: none; 
         }
 
+        /* PREMIUM FIXED STATIC TOP NAVBAR OVERHAUL */
         header {
-            margin-bottom: 25px;
-            text-align: center;
-            position: relative;
-            padding-top: 10px;
-        }
-
-        .header-title-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 9999;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding-right: 140px; 
-            padding-left: 140px;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .header-left-cluster {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         header h1 {
-            font-size: 2rem;
-            color: var(--dark);
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.025em;
         }
 
-        /* NEW ANIMATED REAL-TIME CLOUD CONNECTION MODULE */
+        /* ANIMATED CLOUD INDICATION SYSTEM PINNED NEXT TO TEXT LOGO */
         .cloud-badge-animated {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #ffffff;
-            padding: 6px 14px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-            font-size: 0.8rem;
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 700;
             color: #475569;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.3s ease;
         }
 
         .cloud-pulse-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background-color: var(--success);
             border-radius: 50%;
             position: relative;
@@ -165,10 +186,9 @@
             100% { transform: scale(2.6); opacity: 0; }
         }
 
-        /* Cloud Syncing Working Progress State Modifiers */
         .cloud-badge-animated.is-syncing {
-            border-color: #fde047;
             background: #fefce8;
+            color: #854d0e;
         }
 
         .cloud-badge-animated.is-syncing .cloud-pulse-dot {
@@ -183,131 +203,105 @@
             100% { transform: rotate(360deg); }
         }
 
-        .btn-logout-portal {
-            position: absolute;
-            top: 5px;
-            right: 15px;
-            background-color: #ffffff;
-            color: #64748b;
-            border: 1px solid #cbd5e1;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
+        .header-right-cluster {
             display: flex;
             align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.15s ease-in-out;
+            gap: 24px;
+        }
+
+        /* MONTH SELECTOR BAR ON TOP NAV FRAME */
+        .nav-month-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .nav-month-container input {
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--dark);
+            width: 140px;
+            background: #f8fafc;
+            text-align: center;
+        }
+
+        /* NEW STYLE: SaaS Web-App Minimalist Icon Logout Button Trigger */
+        .btn-logout-portal {
+            background: #ffffff;
+            color: #64748b;
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
         }
 
         .btn-logout-portal:hover {
-            background-color: #fff1f1;
+            background-color: #fef2f2;
             color: var(--danger);
             border-color: #fca5a5;
-            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.08);
         }
 
-        .master-control-bar {
+        .btn-logout-portal:active { transform: scale(0.95); }
+
+        /* CORE WORKSPACE ENTRY CONTAINER ROW ADJUSTMENT FOR STRIP HEIGHT OFFSET */
+        .client-list {
             display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 20px;
-            background: var(--card-bg);
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            max-width: fit-content;
-            margin: 0 auto 25px auto;
-            border: 1px solid var(--border-color);
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 32px;
+            margin-top: calc(var(--nav-height) + 32px);
+            padding-bottom: 120px; 
         }
 
-        .global-input-group {
-            text-align: left;
-        }
-
-        .global-input-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #64748b;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .global-input-group input {
-            padding: 10px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 1rem;
-            color: var(--dark);
-            font-weight: 600;
-            width: 180px;
-        }
-
-        .add-client-group input {
-            width: 250px !important;
-            font-weight: normal !important;
-        }
-
-        .btn-add-profile {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 11px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            height: 46px;
-        }
-
-        .btn-add-profile:hover { background-color: #219653; }
-
-        /* NEW HOVER WORKSPACE FLOATING CONTROL HUB HOVER SYSTEM */
+        /* HIGH-END CONTROL HUB HOVER SYSTEM OVERHAUL WITH MODAL ADD MAPPING */
         .admin-floating-hub {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
+            bottom: 30px;
+            right: 30px;
             display: flex;
             flex-direction: column-reverse;
             align-items: flex-end;
-            gap: 12px;
-            z-index: 999999;
+            gap: 14px;
+            z-index: 99999;
         }
 
         .fab-trigger-gear {
-            width: 56px;
-            height: 56px;
-            background-color: var(--dark);
+            width: 60px;
+            height: 60px;
+            background-color: #0f172a;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3), 0 4px 6px -4px rgba(15, 23, 42, 0.3);
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .fab-trigger-gear svg {
-            transition: transform 0.4s ease;
         }
 
         .floating-menu-options-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            align-items: flex-end;
+            gap: 10px;
             opacity: 0;
             pointer-events: none;
-            transform: translateY(15px);
+            transform: translateY(20px);
             transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        /* Pure CSS hover reveal bridge configuration */
         .admin-floating-hub:hover .floating-menu-options-list {
             opacity: 1;
             pointer-events: auto;
@@ -316,18 +310,51 @@
 
         .admin-floating-hub:hover .fab-trigger-gear {
             background-color: var(--primary);
-            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.35);
         }
 
         .admin-floating-hub:hover .fab-trigger-gear svg {
             transform: rotate(90deg);
         }
 
+        /* REGISTRATION ROW BUILT INTO SLIDEOUT OVERLAY INSIDE ACTION FAB HOVER PANELS */
+        .fab-client-add-form-inline {
+            background: white;
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .fab-client-add-form-inline input {
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 220px;
+            outline: none;
+        }
+        .fab-client-add-form-inline input:focus { border-color: var(--primary); }
+
+        .btn-inline-submit-client {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         .action-sub-btn {
             background: white;
-            color: var(--text-main);
+            color: #334155;
             border: 1px solid var(--border-color);
-            padding: 10px 18px;
+            padding: 12px 20px;
             border-radius: 30px;
             font-size: 0.9rem;
             font-weight: 600;
@@ -335,16 +362,15 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             white-space: nowrap;
             transition: all 0.15s ease-in-out;
         }
 
         .action-sub-btn:hover {
-            background: var(--dark);
+            background: #0f172a;
             color: white;
-            border-color: var(--dark);
-            transform: scale(1.03);
+            border-color: #0f172a;
         }
 
         .action-sub-btn.btn-danger-action:hover {
@@ -352,25 +378,19 @@
             border-color: var(--danger);
         }
 
-        .client-list {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            padding-bottom: 90px; 
-        }
-
         .client-card {
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border-color);
-            border-left: 8px solid #cbd5e1;
             overflow: hidden;
+            transition: border-color 0.2s;
         }
+        .client-card:hover { border-color: #cbd5e1; }
 
         .client-header {
             background: #f8fafc;
-            padding: 15px 20px;
+            padding: 18px 24px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -378,36 +398,32 @@
         }
 
         .client-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--dark);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
             border: none;
             background: transparent;
             width: 450px;
-            border-bottom: 1px dashed #cbd5e1;
+            letter-spacing: -0.01em;
         }
-
-        .client-title:focus { outline: none; border-bottom-color: var(--primary); }
+        .client-title:focus { outline: none; border-bottom: 2px solid var(--primary); }
 
         .btn-delete-client {
             background: transparent;
-            color: var(--danger);
-            border: 1px solid #f9d5d5;
-            padding: 5px 12px;
-            border-radius: 6px;
+            color: #94a3b8;
+            border: none;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: color 0.2s;
         }
-
-        .btn-delete-client:hover { background: #fdf2f2; border-color: var(--danger); }
+        .btn-delete-client:hover { color: var(--danger); }
 
         .work-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 20px;
-            padding: 20px;
+            gap: 24px;
+            padding: 24px;
         }
 
         @media (min-width: 950px) {
@@ -415,63 +431,64 @@
         }
 
         .work-section {
-            background: #fafbfc;
-            padding: 18px;
-            border-radius: 8px;
-            border: 1px solid #edf2f7;
-            height: fit-content;
+            background: #fdfdfd;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
         }
 
         .work-section h4 {
-            font-size: 1rem;
-            margin-bottom: 15px;
-            color: var(--dark);
-            padding-bottom: 5px;
-            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+            margin-bottom: 18px;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .input-group {
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
         .input-group label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
             color: #64748b;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .date-input-container {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .date-input-container input[type="text"] {
             flex-grow: 1;
-            padding: 8px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             font-size: 0.9rem;
+            background: #ffffff;
+            transition: all 0.2s;
         }
+        .date-input-container input[type="text"]:focus { outline: none; border-color: var(--primary); }
 
         .picker-wrapper {
             position: relative;
-            width: 40px;
-            height: 38px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
+            width: 42px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             background: #f1f5f9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") no-repeat center;
             cursor: pointer;
             overflow: hidden;
             transition: all 0.15s ease-in-out;
         }
 
-        .picker-wrapper:hover {
-            background-color: #e2e8f0;
-            border-color: #94a3b8;
-        }
+        .picker-wrapper:hover { background-color: #e2e8f0; border-color: #94a3b8; }
 
         .picker-wrapper input[type="date"] {
             position: absolute;
@@ -484,101 +501,103 @@
         }
 
         input.has-date {
-            background-color: #e8f8f5 !important;
-            color: #117a65 !important;
-            font-weight: bold;
-            border-color: #a3e4d7 !important;
+            background-color: #ecfdf5 !important;
+            color: #065f46 !important;
+            font-weight: 700;
+            border-color: #a7f3d0 !important;
         }
 
-        input.empty-date {
-            background-color: #ffffff;
-        }
+        input.empty-date { background-color: #ffffff; }
 
         .demat-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
         }
 
         .demat-card-item {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
         }
 
         .demat-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 5px;
-            border-bottom: 1px dashed #e2e8f0;
+            margin-bottom: 14px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed var(--border-color);
         }
 
         .demat-name-input {
-            font-weight: bold;
-            font-size: 1rem;
+            font-weight: 700;
+            font-size: 0.95rem;
             border: none;
-            border-bottom: 1px solid #cbd5e1;
-            width: 60%;
+            color: #334155;
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            width: 50%;
         }
+        .demat-name-input:focus { outline: none; border-bottom-color: var(--primary); }
 
         .btn-delete-demat {
             background: transparent;
-            color: var(--danger);
+            color: #cbd5e1;
             border: none;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: color 0.2s;
         }
+        .btn-delete-demat:hover { color: var(--danger); }
 
         .demat-row-block {
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             background: #f8fafc;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #f1f5f9;
         }
-
-        .demat-row-block:last-child {
-            margin-bottom: 0;
-        }
+        .demat-row-block:last-child { margin-bottom: 0; }
 
         .sub-block-title {
-            font-size: 0.8rem;
-            font-weight: bold;
+            font-size: 0.75rem;
+            font-weight: 700;
             text-transform: uppercase;
-            color: #475569;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            color: #64748b;
+            margin-bottom: 12px;
+            letter-spacing: 0.025em;
         }
 
         .demat-fields-horizontal {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 14px;
         }
 
         .notes-section {
-            padding: 0 20px 20px 20px;
+            padding: 0 24px 24px 24px;
             width: 100%;
         }
 
         .notes-section input[type="text"] {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.95rem;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: #fafafa;
+            transition: all 0.2s;
         }
+        .notes-section input[type="text"]:focus { outline: none; border-color: var(--primary); background-color: #ffffff; }
 
         #print-mount { display: none; }
 
         @media print {
             body { background: white; color: black; padding: 0; margin: 0; }
-            .container, .notes-section, #login-overlay, .admin-floating-hub { display: none !important; }
+            .container, .notes-section, #login-overlay, .admin-floating-hub, header { display: none !important; }
             #print-mount { display: block !important; background: white; padding: 10px; width: 100%; }
             .master-print-title { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 3px double #000; }
             .master-print-title h2 { font-size: 1.4rem; text-transform: uppercase; }
@@ -592,8 +611,11 @@
         }
 
         @media (max-width: 768px) {
-            .header-title-container { padding-right: 0; padding-left: 0; flex-direction: column; gap: 8px; }
-            .btn-logout-portal { position: relative; top: 0; right: 0; margin: 10px auto; width: fit-content; }
+            header { padding: 0 20px; flex-direction: column; height: auto; padding-bottom: 15px; }
+            .header-left-cluster { margin-top: 15px; }
+            .header-right-cluster { width: 100%; justify-content: space-between; margin-top: 10px; }
+            .client-list { margin-top: 180px; }
+            .btn-logout-portal { position: relative; top: 0; right: 0; }
         }
     </style>
 </head>
@@ -609,8 +631,9 @@
 </div>
 
 <div class="container" id="main-app-layout">
+    <!-- FROZEN STATIC HIGH-END WEB HEAD PLATFORM STRIP -->
     <header>
-        <div class="header-title-container">
+        <div class="header-left-cluster">
             <h1>DML Family Accounting & Filing Tracker</h1>
             <div class="cloud-badge-animated" id="cloud-status-badge">
                 <div class="cloud-pulse-dot"></div>
@@ -618,29 +641,32 @@
             </div>
         </div>
         
-        <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()">🔒 Log Out</button>
-
-        <div class="master-control-bar">
-            <div class="global-input-group">
-                <label>Target Tracking Month</label>
-                <input type="text" id="global-month-input" placeholder="e.g., June 2026" onchange="updateGlobalMonth(this.value)">
+        <div class="header-right-cluster">
+            <div class="nav-month-container">
+                <span>Period:</span>
+                <input type="text" id="global-month-input" placeholder="June 2026" onchange="updateGlobalMonth(this.value)">
             </div>
             
-            <div class="global-input-group add-client-group">
-                <label>Register New Account Name</label>
-                <input type="text" id="new-client-name-input" placeholder="Enter Full Name" />
-            </div>
-            <button class="btn-add-profile" onclick="addNewClientProfileFromControl()">➕ Add New Client</button>
+            <!-- STYLIZED INTERACTIVE MINIMALIST OVERLAY ICON SYMBOL LOGOUT TRIGGER -->
+            <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()" title="Lock Session">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+            </button>
         </div>
     </header>
 
+    <!-- FLOATING QUICK MENU HUB -->
     <div class="admin-floating-hub">
         <div class="fab-trigger-gear">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap='round' stroke-linejoin='round'><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2v.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap='round' stroke-linejoin='round'><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2v.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </div>
         <div class="floating-menu-options-list">
-            <button class="action-sub-btn" onclick="printMasterSummaryPage()">🖨️ Print Summary</button>
-            <button class="action-sub-btn btn-danger-action" onclick="resetToSystemDefaultWithSecurity()">🧹 Reset Data</button>
+            <!-- CONSOLIDATED ACTION FORM: INLINE REGISTRY INPUT FOR NEW CLIENT ADD FUNCTION -->
+            <div class="fab-client-add-form-inline">
+                <input type="text" id="new-client-name-input" placeholder="Type New Client Full Name..." />
+                <button class="btn-inline-submit-client" onclick="addNewClientProfileFromControl()">Register Client</button>
+            </div>
+            <button class="action-sub-btn" onclick="printMasterSummaryPage()">🖨️ Print Report Sheet</button>
+            <button class="action-sub-btn btn-danger-action" onclick="resetToSystemDefaultWithSecurity()">🧹 Reset Progress Dates</button>
         </div>
     </div>
 
@@ -712,13 +738,12 @@
         }
     });
 
-    // NEW REAL-TIME ANIMATED INTERACTION DISPATCH STATES
     function saveState() {
         const badge = document.getElementById('cloud-status-badge');
         const text = document.getElementById('cloud-status-text');
         
         badge.classList.add('is-syncing');
-        text.innerText = "Syncing...";
+        text.innerText = "Syncing Engine...";
 
         database.ref('tracker_state').set({
             masterData: masterData,
@@ -787,7 +812,7 @@
         const candidateName = inputField.value.trim().toUpperCase();
         
         if (!candidateName) {
-            alert("Please type a valid client name.");
+            alert("Please type a valid client full name to register.");
             return;
         }
 
@@ -993,8 +1018,8 @@
                     dematsHTML += `
                         <div class="demat-card-item">
                             <div class="demat-card-header">
-                                <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" style="border-bottom:1px dashed #cbd5e1;" />
-                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑7 Remove Broker</button>
+                                <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
+                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove Broker</button>
                             </div>
                             
                             <div class="demat-row-block">
@@ -1074,7 +1099,7 @@
                 <div class="client-card" id="client-row-${client.id}">
                     <div class="client-header">
                         <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" />
-                        <button class="btn-delete-client" onclick="removeEntireClientProfile(${client.id})">🗑️ Delete Client Profile</button>
+                        <button class="btn-delete-client" onclick="removeEntireClientProfile(${client.id})">Delete Profile</button>
                     </div>
 
                     <div class="work-grid">
@@ -1082,7 +1107,7 @@
                             <h4>I. Bank Book</h4>
                             
                             <div class="input-group">
-                                <label>Accounting Entries (statement till this date is updated)</label>
+                                <label>Accounting Entries (statement updated till)</label>
                                 <div class="date-input-container">
                                     <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
                                     <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankEntryDate-${client.id}')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-bankEntryDate-${client.id}')">
@@ -1092,7 +1117,7 @@
                             </div>
                             
                             <div class="input-group" style="margin-top: 20px;">
-                                <label>Filing (statement till this date is filed)</label>
+                                <label>Filing (statement filed till)</label>
                                 <div class="date-input-container">
                                     <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
                                     <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankFilingDate-${client.id}')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-bankFilingDate-${client.id}')">
