@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Accounting Master Dashboard</title>
+    <!-- Firebase Cloud Integration Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -98,7 +99,7 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            position: relative; /* Context anchor layer for upper-right child layouts */
+            position: relative;
             display: none; 
         }
 
@@ -113,11 +114,10 @@
             font-size: 2rem;
             color: var(--dark);
             margin-bottom: 20px;
-            padding-right: 140px; /* Safeguards text from wrapping into logout bounds */
+            padding-right: 140px; 
             padding-left: 140px;
         }
 
-        /* NEW STYLE: Minimalist Polished Logout Component Action */
         .btn-logout-portal {
             position: absolute;
             top: 5px;
@@ -492,7 +492,6 @@
             .sig-line { border-top: 1px solid #000; width: 180px; text-align: center; padding-top: 5px; }
         }
 
-        /* Responsive override block specifically preventing logout compression artifacts */
         @media (max-width: 768px) {
             header h1 { padding-right: 0; padding-left: 0; margin-bottom: 50px; }
             .btn-logout-portal { position: relative; top: 0; right: 0; margin: 10px auto; width: fit-content; }
@@ -537,7 +536,7 @@
     <div class="client-list" id="client-container"></div>
 
     <footer>
-        <button class="btn-reset" onclick="resetToSystemDefaultWithSecurity()">Reset Tracker Data to Factory Defaults</button>
+        <button class="btn-reset" onclick="resetToSystemDefaultWithSecurity()">Reset Monthly Progress (Clears Dates & Remarks)</button>
     </footer>
 </div>
 
@@ -552,19 +551,7 @@
     const database = firebase.database();
 
     let globalReportingMonth = 'June 2026';
-    
-    let masterData = [
-        { id: 1, name: "CHIRAG HARISHBHAI LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 101, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 2, name: "DARSHAN HARISHBHAI LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 102, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 3, name: "HARISHKUMAR JAYANTILAL LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 103, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 4, name: "MEENABEN HARISHKUMAR LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 104, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 5, name: "VIMMI CHIRAG LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 105, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 6, name: "SEJAL DARSHAN LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 106, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 7, name: "CHIRAG HARISHBHAI LAKHANI HUF", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 107, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 8, name: "DARSHAN HARISHBHAI LAKHANI HUF", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 108, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 9, name: "RIANNA CHIRAG LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 109, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] },
-        { id: 10, name: "KIARA DARSHAN LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 110, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] }
-    ];
+    let masterData = [];
 
     window.addEventListener('load', function() {
         if (sessionStorage.getItem('dml_authorized_session') === 'true') {
@@ -580,9 +567,6 @@
             sessionStorage.setItem('dml_authorized_session', 'true'); 
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-app-layout').style.display = 'block';
-            
-            document.getElementById('global-month-input').value = globalReportingMonth;
-            renderDashboardHTML();
             downloadLatestCloudData();
         } else {
             alert("Security Code Invalid: Access Rejected.");
@@ -590,10 +574,12 @@
         }
     }
 
+    // FIXED LOGOUT ROUTINE: Strips token overlays cleanly with no alert windows
     function triggerManualSecurePortalLogout() {
         sessionStorage.removeItem('dml_authorized_session');
-        alert("Portal locked successfully.");
-        location.reload();
+        document.getElementById('main-app-layout').style.display = 'none';
+        document.getElementById('app-passkey-input').value = '';
+        document.getElementById('login-overlay').style.display = 'flex';
     }
 
     document.getElementById('app-passkey-input').addEventListener('keydown', function(e) {
@@ -606,9 +592,9 @@
             if (cloudData && cloudData.masterData) {
                 masterData = cloudData.masterData;
                 globalReportingMonth = cloudData.globalReportingMonth || 'June 2026';
-                document.getElementById('global-month-input').value = globalReportingMonth;
-                renderDashboardHTML(); 
             }
+            document.getElementById('global-month-input').value = globalReportingMonth;
+            renderDashboardHTML(); 
         });
     }
 
@@ -732,6 +718,17 @@
         }
     }
 
+    document.addEventListener('change', function(e) {
+        if(e.target && e.target.classList.contains('notes-input')) {
+            const cid = e.target.getAttribute('data-client-id');
+            const target = masterData.find(c => c.id == cid);
+            if(target) {
+                target.internalNotes = e.target.value;
+                saveState();
+            }
+        }
+    });
+
     function updateDematName(clientId, dematId, value) {
         const client = masterData.find(c => c.id === clientId);
         const d = client?.demats.find(dm => dm.id === dematId);
@@ -820,17 +817,19 @@
         let rowsHTML = '';
 
         masterData.forEach(c => {
-            let bankCol = `return<strong>Entries:</strong> ${c.bankEntryDate || '<span style="color:#b91c1c;">❌ Open</span>'}<br><strong>Filing:</strong> ${c.bankFilingDate || '<span style="color:#b91c1c;">❌ Open</span>'}`;
+            let bankCol = `<strong>Entries:</strong> ${c.bankEntryDate || '<span style="color:#b91c1c;">❌ Open</span>'}<br><strong>Filing:</strong> ${c.bankFilingDate || '<span style="color:#b91c1c;">❌ Open</span>'}`;
 
             let dematCol = '<ul class="print-ul">';
-            if(c.demats.length === 0) dematCol += '<li>No Accounts</li>';
-            c.demats.forEach(d => {
-                dematCol += `<li>
-                    <strong>${d.name}:</strong><br>
-                    Entries &rarr; [Ledger: ${d.entryLedger || '—'} | CN: ${d.entryContract || '—'} | PL: ${d.entryPnl || '—'}]<br>
-                    Filing &rarr; [Ledger: ${d.fileLedger || '—'} | CN: ${d.fileContract || '—'} | PL: ${d.filePnl || '—'}]
-                </li>`;
-            });
+            if(!c.demats || c.demats.length === 0) dematCol += '<li>No Accounts</li>';
+            else {
+                c.demats.forEach(d => {
+                    dematCol += `<li>
+                        <strong>${d.name}:</strong><br>
+                        Entries &rarr; [Ledger: ${d.entryLedger || '—'} | CN: ${d.entryContract || '—'} | PL: ${d.entryPnl || '—'}]<br>
+                        Filing &rarr; [Ledger: ${d.fileLedger || '—'} | CN: ${d.fileContract || '—'} | PL: ${d.filePnl || '—'}]
+                    </li>`;
+                });
+            }
             dematCol += '</ul>';
 
             rowsHTML += `
@@ -875,89 +874,91 @@
 
         masterData.forEach(client => {
             let dematsHTML = '';
-            client.demats.forEach(d => {
-                const eLClass = d.entryLedger.trim() !== '' ? 'has-date' : 'empty-date';
-                const eCClass = d.entryContract.trim() !== '' ? 'has-date' : 'empty-date';
-                const ePClass = d.entryPnl.trim() !== '' ? 'has-date' : 'empty-date';
-                const fLClass = d.fileLedger.trim() !== '' ? 'has-date' : 'empty-date';
-                const fCClass = d.fileContract.trim() !== '' ? 'has-date' : 'empty-date';
-                const fPClass = d.filePnl.trim() !== '' ? 'has-date' : 'empty-date';
+            if(client.demats) {
+                client.demats.forEach(d => {
+                    const eLClass = d.entryLedger.trim() !== '' ? 'has-date' : 'empty-date';
+                    const eCClass = d.entryContract.trim() !== '' ? 'has-date' : 'empty-date';
+                    const ePClass = d.entryPnl.trim() !== '' ? 'has-date' : 'empty-date';
+                    const fLClass = d.fileLedger.trim() !== '' ? 'has-date' : 'empty-date';
+                    const fCClass = d.fileContract.trim() !== '' ? 'has-date' : 'empty-date';
+                    const fPClass = d.filePnl.trim() !== '' ? 'has-date' : 'empty-date';
 
-                dematsHTML += `
-                    <div class="demat-card-item">
-                        <div class="demat-card-header">
-                            <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" style="border-bottom:1px dashed #cbd5e1;" />
-                            <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑7 Remove Broker</button>
-                        </div>
-                        
-                        <div class="demat-row-block">
-                            <div class="sub-block-title">📊 1. Accounting Entries</div>
-                            <div class="demat-fields-horizontal">
-                                <div class="input-group">
-                                    <label>Ledger</label>
-                                    <div class="date-input-container">
-                                        <input type="text" id="txt-${client.id}-${d.id}-entryLedger" class="${eLClass}" value="${d.entryLedger}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" />
-                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')">
-                                            <input type="date" id="pkr-${client.id}-${d.id}-entryLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" />
+                    dematsHTML += `
+                        <div class="demat-card-item">
+                            <div class="demat-card-header">
+                                <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" style="border-bottom:1px dashed #cbd5e1;" />
+                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑7 Remove Broker</button>
+                            </div>
+                            
+                            <div class="demat-row-block">
+                                <div class="sub-block-title">📊 1. Accounting Entries</div>
+                                <div class="demat-fields-horizontal">
+                                    <div class="input-group">
+                                        <label>Ledger</label>
+                                        <div class="date-input-container">
+                                            <input type="text" id="txt-${client.id}-${d.id}-entryLedger" class="${eLClass}" value="${d.entryLedger}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" />
+                                            <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')">
+                                                <input type="date" id="pkr-${client.id}-${d.id}-entryLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Contract</label>
+                                        <div class="date-input-container">
+                                            <input type="text" id="txt-${client.id}-${d.id}-entryContract" class="${eCClass}" value="${d.entryContract}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" />
+                                            <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')">
+                                                <input type="date" id="pkr-${client.id}-${d.id}-entryContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>P&L</label>
+                                        <div class="date-input-container">
+                                            <input type="text" id="txt-${client.id}-${d.id}-entryPnl" class="${ePClass}" value="${d.entryPnl}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" />
+                                            <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')">
+                                                <input type="date" id="pkr-${client.id}-${d.id}-entryPnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="input-group">
-                                    <label>Contract</label>
-                                    <div class="date-input-container">
-                                        <input type="text" id="txt-${client.id}-${d.id}-entryContract" class="${eCClass}" value="${d.entryContract}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" />
-                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')">
-                                            <input type="date" id="pkr-${client.id}-${d.id}-entryContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" />
+                            </div>
+
+                            <div class="demat-row-block">
+                                <div class="sub-block-title">📁 2. Physical Filing</div>
+                                <div class="demat-fields-horizontal">
+                                    <div class="input-group">
+                                        <label>Ledger</label>
+                                        <div class="date-input-container">
+                                            <input type="text" id="txt-${client.id}-${d.id}-fileLedger" class="${fLClass}" value="${d.fileLedger}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" />
+                                            <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')">
+                                                <input type="date" id="pkr-${client.id}-${d.id}-fileLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="input-group">
-                                    <label>P&L</label>
-                                    <div class="date-input-container">
-                                        <input type="text" id="txt-${client.id}-${d.id}-entryPnl" class="${ePClass}" value="${d.entryPnl}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" />
-                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')">
-                                            <input type="date" id="pkr-${client.id}-${d.id}-entryPnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" />
+                                    <div class="input-group">
+                                        <label>Contract</label>
+                                        <div class="date-input-container">
+                                            <input type="text" id="txt-${client.id}-${d.id}-fileContract" class="${fCClass}" value="${d.fileContract}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" />
+                                            <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')">
+                                                <input type="date" id="pkr-${client.id}-${d.id}-fileContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>P&L</label>
+                                        <div class="date-input-container">
+                                            <input type="text" id="txt-${client.id}-${d.id}-filePnl" class="${fPClass}" value="${d.filePnl}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" />
+                                            <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')">
+                                                <input type="date" id="pkr-${client.id}-${d.id}-filePnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="demat-row-block">
-                            <div class="sub-block-title">📁 2. Physical Filing</div>
-                            <div class="demat-fields-horizontal">
-                                <div class="input-group">
-                                    <label>Ledger</label>
-                                    <div class="date-input-container">
-                                        <input type="text" id="txt-${client.id}-${d.id}-fileLedger" class="${fLClass}" value="${d.fileLedger}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" />
-                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')">
-                                            <input type="date" id="pkr-${client.id}-${d.id}-fileLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="input-group">
-                                    <label>Contract</label>
-                                    <div class="date-input-container">
-                                        <input type="text" id="txt-${client.id}-${d.id}-fileContract" class="${fCClass}" value="${d.fileContract}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" />
-                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')">
-                                            <input type="date" id="pkr-${client.id}-${d.id}-fileContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="input-group">
-                                    <label>P&L</label>
-                                    <div class="date-input-container">
-                                        <input type="text" id="txt-${client.id}-${d.id}-filePnl" class="${fPClass}" value="${d.filePnl}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" />
-                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')">
-                                            <input type="date" id="pkr-${client.id}-${d.id}-filePnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
 
             const bEntryClass = client.bankEntryDate?.trim() !== '' ? 'has-date' : 'empty-date';
             const bFileClass = client.bankFilingDate?.trim() !== '' ? 'has-date' : 'empty-date';
@@ -1008,7 +1009,7 @@
                     <div class="notes-section">
                         <div class="input-group">
                             <label style="font-size: 0.85rem; font-weight: bold; color: #475569;">Remarks</label>
-                            <input type="text" value="${client.internalNotes || ''}" placeholder="Write notes here..." onchange="updateBaseField(${client.id}, 'internalNotes', this.value)" />
+                            <input type="text" class="notes-input" data-client-id="${client.id}" value="${client.internalNotes || ''}" placeholder="Write notes here..." />
                         </div>
                     </div>
                 </div>
@@ -1017,22 +1018,32 @@
         });
     }
 
-    function updateBaseField(clientId, key, value) {
-        const client = masterData.find(c => c.id === clientId);
-        if(client) {
-            client[key] = value;
-            saveState();
-        }
-    }
-
+    // UPDATED SELECTIVE DATA WIPING ENGINE: Targets dates and comments only
     function resetToSystemDefaultWithSecurity() {
         const tokenInput = prompt("Enter Administration Reset Access Key Code to continue:");
         if (tokenInput === null) return;
         if (tokenInput === "031097") {
-            masterData = fallbackDefaultBlueprints;
-            globalReportingMonth = 'June 2026';
+            masterData.forEach(client => {
+                // Clear bank logs
+                client.bankEntryDate = '';
+                client.bankFilingDate = '';
+                client.internalNotes = '';
+                
+                // Clear active demat metric configurations inside child matrices
+                if(client.demats) {
+                    client.demats.forEach(d => {
+                        d.entryLedger = '';
+                        d.entryContract = '';
+                        d.entryPnl = '';
+                        d.fileLedger = '';
+                        d.fileContract = '';
+                        d.filePnl = '';
+                    });
+                }
+            });
+            renderDashboardHTML();
             saveState();
-            alert("Database cleared and reset online successfully.");
+            alert("Monthly tracking cycles reset. Account titles and broker trees preserved successfully.");
         } else {
             alert("Security Access Denied: Invalid credentials.");
         }
