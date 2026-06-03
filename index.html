@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DML Accounting Tracker</title>
-    <!-- Firebase Cloud Integration Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -190,13 +189,13 @@
             display: none; 
         }
 
-        /* GEOMETRIC NAVIGATION BAR CANVASES */
+        /* GEOMETRIC ADAPTIVE FLEXBOX NAVIGATION BAR ENGINE */
         header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: var(--nav-height);
+            min-height: var(--nav-height);
             background-color: #0f172a;
             background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 20px 20px;
@@ -313,6 +312,7 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            flex-shrink: 0;
         }
 
         .btn-logout-portal:hover { background-color: #7f1d1d; color: #fca5a5; border-color: #b91c1c; }
@@ -351,7 +351,7 @@
             border: none;
             background: transparent;
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             outline: none;
         }
 
@@ -471,8 +471,7 @@
             color: #1e293b;
             background: transparent;
             width: 100%;
-            max-width: 220px;
-            outline: none;
+            max-width: 200px;
         }
 
         .btn-delete-demat { 
@@ -516,7 +515,6 @@
         
         .demat-fields-horizontal span { font-size: 0.8rem; color: #334155; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
-        /* REMARKS LINE WITH EXPLICIT HORIZONTAL GRID LABEL MATCHING */
         .notes-section { padding: 10px 20px 14px 20px; border-top: 1px solid #edf2f7; background: #fafafa; display: flex; align-items: center; gap: 12px; }
         .notes-section label { font-size: 0.88rem; font-weight: 600; color: #334155; width: 65px; flex-shrink: 0; }
         .notes-section input[type="text"] { flex-grow: 1; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; outline: none;}
@@ -592,23 +590,48 @@
         .action-sub-btn.btn-primary-action:hover { background: var(--primary); border-color: var(--primary); }
         .action-sub-btn.btn-danger-action:hover { background: var(--danger); border-color: var(--danger); }
 
+        /* MULTI-DEVICE DEVICE ADAPTIVE MEDIA GRID SYSTEMS BREAKPOINTS */
         @media (max-width: 1024px) {
             .work-grid { grid-template-columns: 1fr; }
             .work-section { border-right: none; border-bottom: 1px solid #e2e8f0; }
             .work-section:last-child { border-bottom: none; }
         }
 
-        /* HARD-CODED DENSE BREAKPOINTS PREVENTING SMARTPHONE OVERFLOW SQUISHING */
+        /* HARD-CODED DENSE BREAKPOINTS PREVENTING MOBILE HEADER SQUISHING AND DROPS */
         @media (max-width: 640px) {
-            header { padding: 8px 16px; height: auto; justify-content: space-between; gap: 4px; }
-            .header-left-cluster { width: auto; justify-content: flex-start; text-align: left; gap: 8px; }
-            header h1 { font-size: 1.1rem; }
-            .cloud-badge-animated { padding: 4px 8px; font-size: 0.65rem; }
-            .header-right-cluster { width: auto; justify-content: flex-end; gap: 8px; }
-            .nav-month-container { font-size: 0.75rem; gap: 4px; }
-            .nav-month-container input { padding: 4px 8px; font-size: 0.85rem; width: 100px; }
-            .btn-logout-portal { width: 32px; height: 32px; }
-            .client-list { margin-top: calc(var(--nav-height) + 16px); }
+            header { 
+                padding: 10px 16px; 
+                height: auto; 
+                min-height: 60px;
+                display: flex; 
+                flex-direction: row; 
+                align-items: center; 
+                justify-content: space-between; 
+                gap: 8px; 
+            }
+            .header-left-cluster { 
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                max-width: 50%;
+                flex-wrap: nowrap;
+            }
+            header h1 { font-size: 0.95rem; font-weight: 800; overflow: hidden; text-overflow: ellipsis; }
+            .cloud-badge-animated { padding: 4px 8px; font-size: 0.6rem; gap: 4px; }
+            .header-right-cluster { 
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                max-width: 50%;
+                flex-wrap: nowrap;
+            }
+            .nav-month-container { font-size: 0.75rem; gap: 4px; white-space: nowrap; }
+            .nav-month-container input { padding: 4px 6px; font-size: 0.8rem; width: 85px; height: 28px; }
+            .btn-logout-portal { width: 30px; height: 30px; border-radius: 6px; }
+            .btn-logout-portal svg { width: 15px; height: 15px; }
+            .client-list { margin-top: calc(var(--nav-height) + 12px); }
             .demat-row-block { grid-template-columns: 1fr; gap: 4px; }
             .demat-fields-horizontal { grid-template-columns: 1fr; gap: 10px; }
             .demat-fields-horizontal .mini-input-cell { flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; }
@@ -651,11 +674,10 @@
     </div>
 </div>
 
-<!-- SECURE PROFILE ELIMINATION PANEL VERIFICATION MODAL -->
 <div class="dashboard-custom-modal" id="delete-profile-modal-overlay">
     <div class="modal-content-box">
         <h3>Security Clearance Required</h3>
-        <p>Are you sure you want to permanently erase this client dataset? Type passkey code to execute execution pipeline paths:</p>
+        <p>Are you sure you want to permanently erase this client dataset? Type passkey code to execute:</p>
         <input type="password" id="modal-delete-profile-passkey-field" placeholder="••••••" maxlength="6" onkeydown="if(event.key === 'Enter') executeSecureProfileEliminationPipeline()" />
         <div class="modal-action-row">
             <button class="modal-btn" onclick="closeCustomModalWindow('delete-profile-modal-overlay')">Cancel</button>
@@ -664,7 +686,6 @@
     </div>
 </div>
 
-<!-- SECURE BROKER REMOVAL VERIFICATION MODAL -->
 <div class="dashboard-custom-modal" id="delete-demat-modal-overlay">
     <div class="modal-content-box">
         <h3>Confirm Broker Removal</h3>
@@ -724,29 +745,6 @@
 <div id="print-mount"></div>
 
 <script>
-    const firebaseConfig = {
-        databaseURL: "https://family-tracker-56b23-default-rtdb.firebaseio.com/" 
-    };
-    
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    let globalReportingMonth = 'June 2026';
-    let masterData = [];
-    
-    // Global pipeline pointer reference containers
-    let targetedClientIdForDeletion = null;
-    let targetedDematClientRef = null;
-    let targetedDematIdForDeletion = null;
-
-    window.addEventListener('load', function() {
-        if (sessionStorage.getItem('dml_authorized_session') === 'true') {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('main-app-layout').style.display = 'block';
-            downloadLatestCloudData();
-        }
-    });
-
     function handleRealtimePasswordAutoEntry(val) {
         if (val.length === 6) {
             verifyAppMasterGateAccess();
@@ -819,7 +817,6 @@
         }
     }
 
-    // SECURE PASSKEY-PROTECTED ELIMINATION REDIRECT INTERFACES
     function requestSecureProfileElimination(clientId) {
         targetedClientIdForDeletion = clientId;
         openCustomModalWindow('delete-profile-modal-overlay', 'modal-delete-profile-passkey-field');
@@ -918,18 +915,26 @@
         return (parseInt(day) > 31 || parseInt(month) > 12) ? inputValue.substring(0, 10) : `${day}/${month}/${year}`;
     }
 
+    function removeEntireClientProfile(clientId) {
+        if (confirm("Delete profile?")) {
+            masterData = masterData.filter(c => c.id !== clientId);
+            renderDashboardHTML(); saveState();
+        }
+    }
+
     function updateClientCardName(clientId, value) {
         const target = masterData.find(c => c.id === clientId);
         if(target) { target.name = value.toUpperCase(); saveState(); }
     }
 
-    document.addEventListener('change', function(e) {
-        if(e.target && e.target.classList.contains('notes-input')) {
-            const cid = e.target.getAttribute('data-client-id');
-            const target = masterData.find(c => c.id == cid);
-            if(target) { target.internalNotes = e.target.value; saveState(); }
+    // RE-ENGINEERED BLUR COUPLING DETECTOR: Syncs comments instantly to cloud on box escape focus loops
+    function handleRemarksRealtimeCloudCommit(clientId, val) {
+        const target = masterData.find(c => c.id == clientId);
+        if(target) {
+            target.internalNotes = val;
+            saveState();
         }
-    });
+    }
 
     function updateDematName(clientId, dematId, value) {
         const client = masterData.find(c => c.id === clientId);
@@ -1035,7 +1040,6 @@
                         <div class="demat-card-item">
                             <div class="demat-card-header">
                                 <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
-                                <!-- PASSWORD MAPPED RESET HOOK ATTACHMENT -->
                                 <button class="btn-delete-demat" onclick="requestSecureBrokerPurge(${client.id}, ${d.id})">🗑 Remove Broker</button>
                             </div>
                             
@@ -1068,7 +1072,6 @@
                 <div class="client-card" id="client-row-${client.id}">
                     <div class="client-header">
                         <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" />
-                        <!-- PASSWORD MAPPED RESET HOOK ATTACHMENT -->
                         <button class="btn-delete-client" onclick="requestSecureProfileElimination(${client.id})">Delete Profile</button>
                     </div>
 
@@ -1100,10 +1103,9 @@
                         </div>
                     </div>
 
-                    <!-- MAPPED FIXED REMARKS INLINE LABEL GRID -->
                     <div class="notes-section">
                         <label>Remarks:</label>
-                        <input type="text" class="notes-input" data-client-id="${client.id}" value="${client.internalNotes || ''}" placeholder="Write notes here..." />
+                        <input type="text" class="notes-input" value="${client.internalNotes || ''}" placeholder="Write notes here..." onblur="handleRemarksRealtimeCloudCommit(${client.id}, this.value)" />
                     </div>
                 </div>
             `;
