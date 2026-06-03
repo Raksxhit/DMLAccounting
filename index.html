@@ -207,11 +207,6 @@
         .demat-fields-horizontal .mini-input-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 100%; }
         .demat-fields-horizontal span { font-size: 0.8rem; color: #334155; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
-        .notes-section { padding: 12px 16px; border-top: 1px solid #edf2f7; background: #fafafa; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .notes-section span { font-size: 0.88rem; font-weight: 700; color: #475569; }
-        .notes-section input[type="text"] { flex: 1; min-width: 200px; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; }
-
-        /* FIXED FAB HOVER CSS */
         .admin-floating-hub {
             position: fixed; 
             bottom: 30px; 
@@ -233,7 +228,7 @@
 
         .floating-menu-options-list {
             position: absolute;
-            bottom: 70px; /* Pushes the menu directly above the gear */
+            bottom: 70px; 
             right: 0;
             display: flex; flex-direction: column; align-items: flex-end; gap: 8px; 
             opacity: 0;
@@ -242,7 +237,6 @@
             transition: all 0.2s ease; z-index: 1;
         }
 
-        /* Trigger hover ONLY when hitting the gear or the active menu */
         .admin-floating-hub:hover .floating-menu-options-list { 
             opacity: 1; 
             visibility: visible; 
@@ -284,12 +278,65 @@
             .admin-floating-hub { bottom: 20px; right: 20px; }
         }
 
+        /* STRICT ANTI-PAGE-CUT AND PROFESSIONAL PRINT ALIGNMENTS */
         @media print {
-            body { background: white; color: black; }
-            .container, .notes-section, #login-overlay, .admin-floating-hub, header, .dashboard-custom-modal { display: none !important; }
-            #print-mount { display: block !important; width: 100%; }
-            .print-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
-            .print-table th, .print-table td { border: 1px solid #000; padding: 4px; }
+            body { 
+                background: #ffffff !important; 
+                color: #000000 !important; 
+                padding: 0 !important;
+                margin: 12mm 15mm !important;
+                font-size: 11px !important;
+            }
+            #main-app-layout, header, .admin-floating-hub, .dashboard-custom-modal, #login-overlay { 
+                display: none !important; 
+            }
+            #print-mount { 
+                display: block !important; 
+                width: 100% !important; 
+            }
+            .print-title-header {
+                text-align: center;
+                font-size: 1.4rem;
+                font-weight: 800;
+                margin-bottom: 18px;
+                color: #000000;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .print-table { 
+                width: 100% !important; 
+                border-collapse: collapse !important; 
+                table-layout: fixed !important; 
+            }
+            .print-table th {
+                background-color: #f1f5f9 !important;
+                color: #000000 !important;
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.72rem;
+                border: 1px solid #000000 !important;
+                padding: 8px 6px !important;
+                text-align: left;
+            }
+            .print-table td { 
+                border: 1px solid #000000 !important; 
+                padding: 8px 8px !important; 
+                vertical-align: top !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+                white-space: normal !important;
+            }
+            /* Explicit Column Proportions to stop squeezing/clipping */
+            .print-table th:nth-child(1), .print-table td:nth-child(1) { width: 22%; } 
+            .print-table th:nth-child(2), .print-table td:nth-child(2) { width: 20%; } 
+            .print-table th:nth-child(3), .print-table td:nth-child(3) { width: 38%; } 
+            .print-table th:nth-child(4), .print-table td:nth-child(4) { width: 20%; } 
+            
+            /* Enforces row integration across page boundaries cleanly */
+            .print-table tr { 
+                page-break-inside: avoid !important; 
+                break-inside: avoid !important; 
+            }
         }
     </style>
 </head>
@@ -389,16 +436,13 @@
     let isUserTyping = false;
     let pendingSecureAction = null; 
 
-    // --- ESCAPE KEY LISTENER (UPDATED) ---
+    // --- ESCAPE KEY LISTENER ---
     document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
-            // 1. Close any active modal popups
             const activeModals = document.querySelectorAll('.dashboard-custom-modal.is-active');
             activeModals.forEach(modal => {
                 modal.classList.remove('is-active');
             });
-            
-            // 2. Drop focus from input fields (triggers onchange & clears bad data)
             if (document.activeElement && document.activeElement.tagName === 'INPUT') {
                 document.activeElement.blur();
             }
@@ -539,9 +583,7 @@
 
     function updateGlobalMonth(val) { globalReportingMonth = val; saveState(); }
 
-    // --- STRICT DATE PARSING (UPDATED) ---
     function parseSmartAccountingDate(inputValue) {
-        // Strip out anything that isn't a number, space, or slash
         let input = inputValue.trim().replace(/[^0-9\s\/]/g, '');
         if (!input) return '';
         
@@ -552,7 +594,6 @@
         let currentMonth = String(today.getMonth() + 1).padStart(2, '0'); 
         let currentYear = String(today.getFullYear());
 
-        // Smart Parsing
         if (parts.length === 1 && parts[0].length >= 8) {
             let cleanDigits = parts[0].substring(0, 8);
             day = cleanDigits.substring(0, 2);
@@ -573,23 +614,19 @@
             return '';
         }
 
-        // Strict Validation Check
         let d = parseInt(day);
         let m = parseInt(month);
         let y = parseInt(year);
 
-        // WIPE FIELD: If month is > 12, day is > 31, or numbers are invalid
         if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > 2100) {
             return ''; 
         }
 
-        // WIPE FIELD: Check for edge cases like February 30th
         let testDate = new Date(y, m - 1, d);
         if (testDate.getFullYear() !== y || testDate.getMonth() !== (m - 1) || testDate.getDate() !== d) {
             return ''; 
         }
 
-        // Return perfectly formatted date
         return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
     }
 
@@ -604,14 +641,6 @@
         const target = masterData.find(c => c.id === clientId);
         if(target) { target.name = value.toUpperCase(); saveState(); }
     }
-
-    document.addEventListener('change', function(e) {
-        if(e.target && e.target.classList.contains('notes-input')) {
-            const cid = e.target.getAttribute('data-client-id');
-            const target = masterData.find(c => c.id == cid);
-            if(target) { target.internalNotes = e.target.value; saveState(); }
-        }
-    });
 
     function updateDematName(clientId, dematId, value) {
         const client = masterData.find(c => c.id === clientId);
@@ -677,22 +706,49 @@
         saveState();
     }
 
+    /* IMMACULATE SUMMARY PRINT ARCHITECTURE WITH EXPLICIT COLUMN WRAPPING & WORD WRAP */
     function printMasterSummaryPage() {
         const mount = document.getElementById('print-mount');
         let rowsHTML = '';
         masterData.forEach(c => {
-            let bankCol = `Entries: ${c.bankEntryDate || '❌'}<br>Filing: ${c.bankFilingDate || '❌'}`;
-            let dematCol = '<ul style="padding-left:10px; margin:0;">';
-            if(!c.demats || c.demats.length === 0) dematCol += '<li>None</li>';
-            else {
+            let bankCol = `<strong>Entries:</strong> ${c.bankEntryDate || '❌'}<br><span style="display:inline-block; margin-top:4px;"><strong>Filing:</strong> ${c.bankFilingDate || '❌'}</span>`;
+            let dematCol = '<ul style="padding-left:14px; margin:0; list-style-type: square;">';
+            if(!c.demats || c.demats.length === 0) {
+                dematCol += '<li>None</li>';
+            } else {
                 c.demats.forEach(d => {
-                    dematCol += `<li><strong>${d.name}</strong><br>Ent &rarr; Ledger:${d.entryLedger || '—'}|Contract Notes:${d.entryContract || '—'}|P&L:${d.entryPnl || '—'}<br>Fil &rarr; Ledger:${d.fileLedger || '—'}|Contract Notes:${d.fileContract || '—'}|P&L:${d.filePnl || '—'}</li>`;
+                    dematCol += `<li style="margin-bottom: 6px;"><strong>${d.name}</strong><br>` +
+                                `<span style="color:#334155; font-size:0.68rem;">Ent &rarr;</span> L:${d.entryLedger || '—'} | C:${d.entryContract || '—'} | P:${d.entryPnl || '—'}<br>` +
+                                `<span style="color:#334155; font-size:0.68rem;">Fil &rarr;</span> L:${d.fileLedger || '—'} | C:${d.fileContract || '—'} | P:${d.filePnl || '—'}</li>`;
                 });
             }
             dematCol += '</ul>';
-            rowsHTML += `<tr><td><strong>${c.name}</strong></td><td>${bankCol}</td><td>${dematCol}</td><td>${c.internalNotes || '-'}</td></tr>`;
+            
+            let remarksText = (c.internalNotes && c.internalNotes.trim() !== '') ? c.internalNotes.trim() : '—';
+            
+            rowsHTML += `<tr>
+                <td><strong>${c.name}</strong></td>
+                <td>${bankCol}</td>
+                <td>${dematCol}</td>
+                <td>${remarksText}</td>
+            </tr>`;
         });
-        mount.innerHTML = `<h2 style="text-align:center; margin-bottom:10px;">Master Monthly Progress Sheet (${globalReportingMonth})</h2><table class="print-table"><thead><tr><th>Client Name</th><th>Bank Account</th><th>Demat Accounts Summary</th><th>Remarks</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
+        
+        mount.innerHTML = `
+            <div class="print-title-header">Master Monthly Progress Sheet (${globalReportingMonth})</div>
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th>Client Name</th>
+                        <th>Bank Account</th>
+                        <th>Demat Accounts Summary</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHTML}
+                </tbody>
+            </table>`;
         window.print();
     }
 
@@ -775,11 +831,6 @@
                             </h4>
                             <div class="demat-wrapper">${dematsHTML}</div>
                         </div>
-                    </div>
-
-                    <div class="notes-section">
-                        <span>Remarks:</span>
-                        <input type="text" class="notes-input" data-client-id="${client.id}" value="${client.internalNotes || ''}" placeholder="Write notes here..." />
                     </div>
                 </div>
             `;
