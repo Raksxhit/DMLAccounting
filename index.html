@@ -27,7 +27,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
         }
 
         body {
@@ -76,7 +76,7 @@
 
         .login-box input[type="password"] {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1.25rem;
@@ -116,49 +116,52 @@
             display: none; 
         }
 
-        /* PREMIUM FIXED STATIC TOP NAVBAR OVERHAUL */
+        /* FIXED PREMIUM STYLIZED LOGO NAVBAR */
         header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: var(--nav-height);
-            background-color: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border-color);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 40px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
         }
 
         .header-left-cluster {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 24px;
         }
 
+        /* RE-DESIGNED: Elegant Technical-SaaS Typography Style */
         header h1 {
-            font-size: 1.35rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            color: #0f172a;
-            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.03em;
         }
 
-        /* ANIMATED CLOUD INDICATION SYSTEM PINNED NEXT TO TEXT LOGO */
         .cloud-badge-animated {
             display: flex;
             align-items: center;
             gap: 8px;
             background: #f1f5f9;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 700;
             color: #475569;
+            border: 1px solid #e2e8f0;
         }
 
         .cloud-pulse-dot {
@@ -189,6 +192,7 @@
         .cloud-badge-animated.is-syncing {
             background: #fefce8;
             color: #854d0e;
+            border-color: #fef08a;
         }
 
         .cloud-badge-animated.is-syncing .cloud-pulse-dot {
@@ -209,7 +213,6 @@
             gap: 24px;
         }
 
-        /* MONTH SELECTOR BAR ON TOP NAV FRAME */
         .nav-month-container {
             display: flex;
             align-items: center;
@@ -222,16 +225,17 @@
         .nav-month-container input {
             padding: 8px 14px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 0.9rem;
             font-weight: 700;
             color: var(--dark);
             width: 140px;
             background: #f8fafc;
             text-align: center;
+            outline: none;
         }
+        .nav-month-container input:focus { border-color: var(--primary); background: #ffffff; }
 
-        /* NEW STYLE: SaaS Web-App Minimalist Icon Logout Button Trigger */
         .btn-logout-portal {
             background: #ffffff;
             color: #64748b;
@@ -256,7 +260,6 @@
 
         .btn-logout-portal:active { transform: scale(0.95); }
 
-        /* CORE WORKSPACE ENTRY CONTAINER ROW ADJUSTMENT FOR STRIP HEIGHT OFFSET */
         .client-list {
             display: flex;
             flex-direction: column;
@@ -265,7 +268,7 @@
             padding-bottom: 120px; 
         }
 
-        /* HIGH-END CONTROL HUB HOVER SYSTEM OVERHAUL WITH MODAL ADD MAPPING */
+        /* CONSOLIDATED INTERACTION FAB COMMAND CENTRE MENU Layout Configuration */
         .admin-floating-hub {
             position: fixed;
             bottom: 30px;
@@ -317,44 +320,11 @@
             transform: rotate(90deg);
         }
 
-        /* REGISTRATION ROW BUILT INTO SLIDEOUT OVERLAY INSIDE ACTION FAB HOVER PANELS */
-        .fab-client-add-form-inline {
-            background: white;
-            padding: 14px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .fab-client-add-form-inline input {
-            padding: 8px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            width: 220px;
-            outline: none;
-        }
-        .fab-client-add-form-inline input:focus { border-color: var(--primary); }
-
-        .btn-inline-submit-client {
-            background-color: var(--success);
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
         .action-sub-btn {
             background: white;
             color: #334155;
             border: 1px solid var(--border-color);
-            padding: 12px 20px;
+            padding: 12px 24px;
             border-radius: 30px;
             font-size: 0.9rem;
             font-weight: 600;
@@ -371,6 +341,11 @@
             background: #0f172a;
             color: white;
             border-color: #0f172a;
+        }
+
+        .action-sub-btn.btn-primary-action:hover {
+            background: var(--primary);
+            border-color: var(--primary);
         }
 
         .action-sub-btn.btn-danger-action:hover {
@@ -647,24 +622,20 @@
                 <input type="text" id="global-month-input" placeholder="June 2026" onchange="updateGlobalMonth(this.value)">
             </div>
             
-            <!-- STYLIZED INTERACTIVE MINIMALIST OVERLAY ICON SYMBOL LOGOUT TRIGGER -->
             <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()" title="Lock Session">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
             </button>
         </div>
     </header>
 
-    <!-- FLOATING QUICK MENU HUB -->
+    <!-- QUICK OPTIONS FLOATING CENTER MENU HUB -->
     <div class="admin-floating-hub">
         <div class="fab-trigger-gear">
             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap='round' stroke-linejoin='round'><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2v.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </div>
         <div class="floating-menu-options-list">
-            <!-- CONSOLIDATED ACTION FORM: INLINE REGISTRY INPUT FOR NEW CLIENT ADD FUNCTION -->
-            <div class="fab-client-add-form-inline">
-                <input type="text" id="new-client-name-input" placeholder="Type New Client Full Name..." />
-                <button class="btn-inline-submit-client" onclick="addNewClientProfileFromControl()">Register Client</button>
-            </div>
+            <!-- RE-ENGINEERED UNIFIED TRIGGER FUNCTION FLOW MAPPING -->
+            <button class="action-sub-btn btn-primary-action" onclick="triggerClientAddPromptEngine()">➕ Add Client</button>
             <button class="action-sub-btn" onclick="printMasterSummaryPage()">🖨️ Print Report Sheet</button>
             <button class="action-sub-btn btn-danger-action" onclick="resetToSystemDefaultWithSecurity()">🧹 Reset Progress Dates</button>
         </div>
@@ -807,12 +778,14 @@
         return `${day}/${month}/${year}`;
     }
 
-    function addNewClientProfileFromControl() {
-        const inputField = document.getElementById('new-client-name-input');
-        const candidateName = inputField.value.trim().toUpperCase();
+    // MODAL ADD PROMPT INTERFACE ENGINE
+    function triggerClientAddPromptEngine() {
+        const modalNameInput = prompt("Enter the new client identity profile full name:");
+        if (modalNameInput === null) return; 
         
+        const candidateName = modalNameInput.trim().toUpperCase();
         if (!candidateName) {
-            alert("Please type a valid client full name to register.");
+            alert("Registration Cancelled: Name entry cannot be blank.");
             return;
         }
 
@@ -828,7 +801,6 @@
 
         renderDashboardHTML();
         saveState();
-        inputField.value = '';
     }
 
     function removeEntireClientProfile(clientId) {
