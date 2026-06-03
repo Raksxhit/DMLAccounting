@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Accounting Master Dashboard</title>
-    <!-- Firebase Cloud Integration Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -99,7 +98,7 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            display: none; /* Safely masked layout framework block state */
+            display: none; 
         }
 
         header {
@@ -199,7 +198,6 @@
 
         .btn-add-profile:hover { background-color: #219653; }
 
-        /* HEADER COMMAND BUTTON: LOGOUT TRIGGER CONTROL */
         .btn-logout-portal {
             background-color: var(--danger);
             color: white;
@@ -318,6 +316,7 @@
             font-size: 0.9rem;
         }
 
+        /* HARD-CODED INTERACTIVE WRAPPER: Fixed delayed native click sequences */
         .picker-wrapper {
             position: relative;
             width: 40px;
@@ -508,16 +507,12 @@
 <div id="print-mount"></div>
 
 <script>
-    // -------------------------------------------------------------
-    // DATABASE LINK NODE PIPELINE
-    // -------------------------------------------------------------
     const firebaseConfig = {
         databaseURL: "https://family-tracker-56b23-default-rtdb.firebaseio.com/" 
     };
     
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    // -------------------------------------------------------------
 
     let globalReportingMonth = 'June 2026';
     
@@ -534,7 +529,6 @@
         { id: 10, name: "KIARA DARSHAN LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 110, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] }
     ];
 
-    // AUTORUN RECONCILIATION GATE: Checks if user possesses an unexpired session cookie key
     window.addEventListener('load', function() {
         if (sessionStorage.getItem('dml_authorized_session') === 'true') {
             document.getElementById('login-overlay').style.display = 'none';
@@ -546,7 +540,7 @@
     function verifyAppMasterGateAccess() {
         const passwordInputVal = document.getElementById('app-passkey-input').value;
         if(passwordInputVal === "031097") {
-            sessionStorage.setItem('dml_authorized_session', 'true'); // Writes secure internal session signature
+            sessionStorage.setItem('dml_authorized_session', 'true'); 
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-app-layout').style.display = 'block';
             
@@ -701,7 +695,6 @@
         }
     }
 
-    // Explicit functional layout configurations mapping properties
     function updateDematName(clientId, dematId, value) {
         const client = masterData.find(c => c.id === clientId);
         const d = client?.demats.find(dm => dm.id === dematId);
@@ -722,6 +715,16 @@
             });
             renderDashboardHTML();
             saveState();
+        }
+    }
+
+    // NEW TURBO-PICKER INTERCEPTOR: Bypasses network overhead to force window opens instantly
+    function forceCalendarPickerTrigger(event, elementId) {
+        event.stopPropagation();
+        const targetedInput = document.getElementById(elementId);
+        if (targetedInput && typeof targetedInput.showPicker === 'function') {
+            targetedInput.focus();
+            targetedInput.showPicker();
         }
     }
 
@@ -786,7 +789,6 @@
             let dematCol = '<ul class="print-ul">';
             if(c.demats.length === 0) dematCol += '<li>No Accounts</li>';
             c.demats.forEach(d => {
-                // Expanded explicit nomenclature format print arrays engine strings
                 dematCol += `<li>
                     <strong>${d.name}:</strong><br>
                     Entries &rarr; [Ledger: ${d.entryLedger || '—'} | CN: ${d.entryContract || '—'} | PL: ${d.entryPnl || '—'}]<br>
@@ -859,21 +861,27 @@
                                     <label>Ledger</label>
                                     <div class="date-input-container">
                                         <input type="text" id="txt-${client.id}-${d.id}-entryLedger" class="${eLClass}" value="${d.entryLedger}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" />
-                                        <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" /></div>
+                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')">
+                                            <input type="date" id="pkr-${client.id}-${d.id}-entryLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="input-group">
                                     <label>Contract</label>
                                     <div class="date-input-container">
                                         <input type="text" id="txt-${client.id}-${d.id}-entryContract" class="${eCClass}" value="${d.entryContract}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" />
-                                        <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" /></div>
+                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')">
+                                            <input type="date" id="pkr-${client.id}-${d.id}-entryContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="input-group">
                                     <label>P&L</label>
                                     <div class="date-input-container">
                                         <input type="text" id="txt-${client.id}-${d.id}-entryPnl" class="${ePClass}" value="${d.entryPnl}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" />
-                                        <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /></div>
+                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')">
+                                            <input type="date" id="pkr-${client.id}-${d.id}-entryPnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -886,21 +894,27 @@
                                     <label>Ledger</label>
                                     <div class="date-input-container">
                                         <input type="text" id="txt-${client.id}-${d.id}-fileLedger" class="${fLClass}" value="${d.fileLedger}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" />
-                                        <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" /></div>
+                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')">
+                                            <input type="date" id="pkr-${client.id}-${d.id}-fileLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="input-group">
                                     <label>Contract</label>
                                     <div class="date-input-container">
                                         <input type="text" id="txt-${client.id}-${d.id}-fileContract" class="${fCClass}" value="${d.fileContract}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" />
-                                        <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" /></div>
+                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')">
+                                            <input type="date" id="pkr-${client.id}-${d.id}-fileContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="input-group">
                                     <label>P&L</label>
                                     <div class="date-input-container">
                                         <input type="text" id="txt-${client.id}-${d.id}-filePnl" class="${fPClass}" value="${d.filePnl}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" />
-                                        <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /></div>
+                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')">
+                                            <input type="date" id="pkr-${client.id}-${d.id}-filePnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -927,7 +941,9 @@
                                 <label>Accounting Entries (statement till this date is updated)</label>
                                 <div class="date-input-container">
                                     <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
-                                    <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, null, 'bankEntryDate', this.value)" /></div>
+                                    <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankEntryDate-${client.id}')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-bankEntryDate-${client.id}')">
+                                        <input type="date" id="pkr-bankEntryDate-${client.id}" onchange="handlePickerSync(${client.id}, null, 'bankEntryDate', this.value)" />
+                                    </div>
                                 </div>
                             </div>
                             
@@ -935,7 +951,9 @@
                                 <label>Filing (statement till this date is filed)</label>
                                 <div class="date-input-container">
                                     <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
-                                    <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, null, 'bankFilingDate', this.value)" /></div>
+                                    <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankFilingDate-${client.id}')" ontouchstart="forceCalendarPickerTrigger(event, 'pkr-bankFilingDate-${client.id}')">
+                                        <input type="date" id="pkr-bankFilingDate-${client.id}" onchange="handlePickerSync(${client.id}, null, 'bankFilingDate', this.value)" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -961,14 +979,6 @@
             `;
             container.innerHTML += cardHTML;
         });
-    }
-
-    function updateBaseField(clientId, key, value) {
-        const client = masterData.find(c => c.id === clientId);
-        if(client) {
-            client[key] = value;
-            saveState();
-        }
     }
 
     function resetToSystemDefaultWithSecurity() {
