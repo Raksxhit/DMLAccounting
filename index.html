@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Accounting Master Dashboard</title>
-    <!-- Firebase Cloud Integration Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -204,20 +203,38 @@
             border: 1px solid #a3e4d7;
         }
 
+        /* REDEVELOPED: Floating Smart Master Printing Node Controller */
         .btn-print-master {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
             background-color: #e67e22;
             color: white;
             border: none;
-            padding: 11px 24px;
-            border-radius: 6px;
+            padding: 14px 28px;
+            border-radius: 50px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            height: 46px;
+            box-shadow: 0 8px 20px rgba(230, 126, 34, 0.35);
+            height: auto;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease-in-out;
         }
 
-        .btn-print-master:hover { background-color: #d35400; }
+        .btn-print-master:hover { 
+            background-color: #d35400; 
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(211, 84, 0, 0.45);
+        }
+
+        .btn-print-master:active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(211, 84, 0, 0.35);
+        }
 
         .btn-add-profile {
             background-color: #27ae60;
@@ -238,6 +255,7 @@
             display: flex;
             flex-direction: column;
             gap: 25px;
+            padding-bottom: 60px; /* Leave space for floating action button overlap */
         }
 
         .client-card {
@@ -479,7 +497,7 @@
 
         @media print {
             body { background: white; color: black; padding: 0; margin: 0; }
-            .container, footer, .notes-section, #login-overlay { display: none !important; }
+            .container, footer, .notes-section, #login-overlay, .btn-print-master { display: none !important; }
             #print-mount { display: block !important; background: white; padding: 10px; width: 100%; }
             .master-print-title { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 3px double #000; }
             .master-print-title h2 { font-size: 1.4rem; text-transform: uppercase; }
@@ -495,6 +513,7 @@
         @media (max-width: 768px) {
             header h1 { padding-right: 0; padding-left: 0; margin-bottom: 50px; }
             .btn-logout-portal { position: relative; top: 0; right: 0; margin: 10px auto; width: fit-content; }
+            .btn-print-master { bottom: 15px; right: 15px; padding: 12px 20px; font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -528,10 +547,10 @@
             <button class="btn-add-profile" onclick="addNewClientProfileFromControl()">➕ Add New Client</button>
 
             <div class="cloud-status-indicator" id="cloud-status">☁️ Cloud Connected</div>
-            
-            <button class="btn-print-master" onclick="printMasterSummaryPage()">🖨️ Print End-of-Month Master Summary</button>
         </div>
     </header>
+
+    <button class="btn-print-master" onclick="printMasterSummaryPage()">🖨️ Print End-of-Month Master Summary</button>
 
     <div class="client-list" id="client-container"></div>
 
@@ -574,7 +593,6 @@
         }
     }
 
-    // FIXED LOGOUT ROUTINE: Strips token overlays cleanly with no alert windows
     function triggerManualSecurePortalLogout() {
         sessionStorage.removeItem('dml_authorized_session');
         document.getElementById('main-app-layout').style.display = 'none';
@@ -770,6 +788,7 @@
         }
     }
 
+    // Standard baseline entry layouts pipeline sync handles
     function handleInputSync(clientId, dematId, key, rawValue, isDemat = false) {
         let parsedValue = parseSmartAccountingDate(rawValue);
         
@@ -887,7 +906,7 @@
                         <div class="demat-card-item">
                             <div class="demat-card-header">
                                 <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" style="border-bottom:1px dashed #cbd5e1;" />
-                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove Broker</button>
+                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑7 Remove Broker</button>
                             </div>
                             
                             <div class="demat-row-block">
@@ -1018,18 +1037,14 @@
         });
     }
 
-    // UPDATED SELECTIVE DATA WIPING ENGINE: Targets dates and comments only
     function resetToSystemDefaultWithSecurity() {
         const tokenInput = prompt("Enter Administration Reset Access Key Code to continue:");
         if (tokenInput === null) return;
         if (tokenInput === "031097") {
             masterData.forEach(client => {
-                // Clear bank logs
                 client.bankEntryDate = '';
                 client.bankFilingDate = '';
                 client.internalNotes = '';
-                
-                // Clear active demat metric configurations inside child matrices
                 if(client.demats) {
                     client.demats.forEach(d => {
                         d.entryLedger = '';
