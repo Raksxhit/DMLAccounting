@@ -738,8 +738,8 @@
             else {
                 c.demats.forEach(d => {
                     dematCol += `<li><strong>${d.name}</strong><br>
-                    <span style="color:#475569;">Entries:</span> L:${d.entryLedger || '—'} | C:${d.entryContract || '—'} | P:${d.entryPnl || '—'}<br>
-                    <span style="color:#475569;">Filing:</span> L:${d.fileLedger || '—'} | C:${d.fileContract || '—'} | P:${d.filePnl || '—'}</li>`;
+                    <span style="color:#475569;">Entries:</span> Ledger:${d.entryLedger || '—'} | CN:${d.entryContract || '—'} | P&L:${d.entryPnl || '—'}<br>
+                    <span style="color:#475569;">Filing:</span> Ledger:${d.fileLedger || '—'} | CN:${d.fileContract || '—'} | P&L:${d.filePnl || '—'}</li>`;
                 });
             }
             dematCol += '</ul>';
