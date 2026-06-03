@@ -211,7 +211,7 @@
         .notes-section span { font-size: 0.88rem; font-weight: 700; color: #475569; }
         .notes-section input[type="text"] { flex: 1; min-width: 200px; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; }
 
-        /* --- THE FIXED FAB HOVER CSS --- */
+        /* FIXED FAB HOVER CSS */
         .admin-floating-hub {
             position: fixed; 
             bottom: 30px; 
@@ -236,8 +236,6 @@
             bottom: 70px; /* Pushes the menu directly above the gear */
             right: 0;
             display: flex; flex-direction: column; align-items: flex-end; gap: 8px; 
-            
-            /* Visibility completely hides the bounding box from your mouse */
             opacity: 0;
             visibility: hidden; 
             transform: translateY(10px); 
@@ -391,14 +389,19 @@
     let isUserTyping = false;
     let pendingSecureAction = null; 
 
-    // --- ESCAPE KEY LISTENER ---
+    // --- ESCAPE KEY LISTENER (UPDATED) ---
     document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
-            // Find any modal that currently has the 'is-active' class and remove it
+            // 1. Close any active modal popups
             const activeModals = document.querySelectorAll('.dashboard-custom-modal.is-active');
             activeModals.forEach(modal => {
                 modal.classList.remove('is-active');
             });
+            
+            // 2. Drop focus from input fields (triggers onchange & clears bad data)
+            if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+                document.activeElement.blur();
+            }
         }
     });
 
@@ -536,30 +539,58 @@
 
     function updateGlobalMonth(val) { globalReportingMonth = val; saveState(); }
 
+    // --- STRICT DATE PARSING (UPDATED) ---
     function parseSmartAccountingDate(inputValue) {
+        // Strip out anything that isn't a number, space, or slash
         let input = inputValue.trim().replace(/[^0-9\s\/]/g, '');
         if (!input) return '';
+        
         let parts = input.split(/[\s\/]+/).filter(p => p.length > 0);
-        if (parts.length === 1 && parts[0].length >= 8) {
-            let cleanDigits = parts[0].substring(0, 8);
-            return `${cleanDigits.substring(0, 2)}/${cleanDigits.substring(2, 4)}/${cleanDigits.substring(4, 8)}`;
-        }
+        let day = '', month = '', year = '';
+        
         let today = new Date();
         let currentMonth = String(today.getMonth() + 1).padStart(2, '0'); 
         let currentYear = String(today.getFullYear());
-        let day = '', month = '', year = '';
 
-        if (parts.length === 1) { day = parts[0].substring(0, 2).padStart(2, '0');
-        month = currentMonth; year = currentYear; }
-        else if (parts.length === 2) { day = parts[0].substring(0, 2).padStart(2, '0');
-        month = parts[1].substring(0, 2).padStart(2, '0'); year = currentYear; }
-        else if (parts.length >= 3) {
+        // Smart Parsing
+        if (parts.length === 1 && parts[0].length >= 8) {
+            let cleanDigits = parts[0].substring(0, 8);
+            day = cleanDigits.substring(0, 2);
+            month = cleanDigits.substring(2, 4);
+            year = cleanDigits.substring(4, 8);
+        } else if (parts.length === 1) { 
+            day = parts[0].substring(0, 2).padStart(2, '0');
+            month = currentMonth; year = currentYear; 
+        } else if (parts.length === 2) { 
+            day = parts[0].substring(0, 2).padStart(2, '0');
+            month = parts[1].substring(0, 2).padStart(2, '0'); year = currentYear; 
+        } else if (parts.length >= 3) {
             day = parts[0].substring(0, 2).padStart(2, '0');
             month = parts[1].substring(0, 2).padStart(2, '0');
             let rawYear = parts[2].substring(0, 4);
             year = rawYear.length === 2 ? '20' + rawYear : rawYear.padStart(4, '0');
+        } else {
+            return '';
         }
-        return (parseInt(day) > 31 || parseInt(month) > 12) ? inputValue.substring(0, 10) : `${day}/${month}/${year}`;
+
+        // Strict Validation Check
+        let d = parseInt(day);
+        let m = parseInt(month);
+        let y = parseInt(year);
+
+        // WIPE FIELD: If month is > 12, day is > 31, or numbers are invalid
+        if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > 2100) {
+            return ''; 
+        }
+
+        // WIPE FIELD: Check for edge cases like February 30th
+        let testDate = new Date(y, m - 1, d);
+        if (testDate.getFullYear() !== y || testDate.getMonth() !== (m - 1) || testDate.getDate() !== d) {
+            return ''; 
+        }
+
+        // Return perfectly formatted date
+        return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
     }
 
     function removeEntireClientProfile(clientId) {
