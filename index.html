@@ -78,7 +78,7 @@
 
         .login-box input[type="password"] {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1.25rem;
@@ -91,7 +91,7 @@
 
         .login-box button {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background-color: var(--primary);
             color: white;
             border: none;
@@ -101,7 +101,7 @@
             cursor: pointer;
         }
 
-        /* SYSTEM MODAL VIEW overlays */
+        /* SYSTEM MODAL DIALOGS */
         .dashboard-custom-modal {
             position: fixed;
             top: 0;
@@ -190,13 +190,13 @@
             display: none; 
         }
 
-        /* TOP RESPONSIVE HEADER GRID */
+        /* GEOMETRIC NAVIGATION BAR CANVASES */
         header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            min-height: var(--nav-height);
+            height: var(--nav-height);
             background-color: #0f172a;
             background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 20px 20px;
@@ -213,7 +213,6 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            flex-wrap: wrap;
         }
 
         header h1 {
@@ -221,6 +220,7 @@
             font-weight: 800;
             color: #ffffff;
             letter-spacing: -0.02em;
+            white-space: nowrap;
         }
 
         .cloud-badge-animated {
@@ -335,7 +335,7 @@
 
         .client-header {
             background: #f8fafc;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
@@ -351,7 +351,7 @@
             border: none;
             background: transparent;
             width: 100%;
-            max-width: 480px;
+            max-width: 450px;
             outline: none;
         }
 
@@ -363,10 +363,10 @@
             font-size: 0.85rem;
             font-weight: 600;
             padding: 6px 0;
+            transition: color 0.2s;
         }
         .btn-delete-client:hover { color: var(--danger); }
 
-        /* FLEX DEVICE ADAPTIVE SYSTEM LAYOUT GRID */
         .work-grid {
             display: grid;
             grid-template-columns: 1fr 3fr;
@@ -375,7 +375,7 @@
         }
 
         .work-section {
-            padding: 16px 20px;
+            padding: 12px 16px;
             border-right: 1px solid #e2e8f0;
         }
         .work-section:last-child { border-right: none; }
@@ -408,7 +408,7 @@
         .date-input-container {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             flex-grow: 1;
             width: 100%;
         }
@@ -445,23 +445,23 @@
         .demat-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .demat-card-item {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
-            padding: 12px;
+            padding: 10px 14px;
         }
 
         .demat-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
 
         .demat-name-input {
@@ -499,7 +499,6 @@
 
         .sub-block-title { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em; }
 
-        /* RE-ARCHITECTED HORIZONTAL GRID CHANNELS */
         .demat-fields-horizontal { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -517,10 +516,12 @@
         
         .demat-fields-horizontal span { font-size: 0.8rem; color: #334155; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
-        .notes-section { padding: 10px 20px 14px 20px; border-top: 1px solid #edf2f7; background: #fafafa; }
-        .notes-section input[type="text"] { width: 100%; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; outline: none;}
+        /* REMARKS LINE WITH EXPLICIT HORIZONTAL GRID LABEL MATCHING */
+        .notes-section { padding: 10px 20px 14px 20px; border-top: 1px solid #edf2f7; background: #fafafa; display: flex; align-items: center; gap: 12px; }
+        .notes-section label { font-size: 0.88rem; font-weight: 600; color: #334155; width: 65px; flex-shrink: 0; }
+        .notes-section input[type="text"] { flex-grow: 1; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; outline: none;}
 
-        /* UNIVERSAL FLOATING FAB INTERACTION PANELS */
+        /* UNIVERSAL FLOATING FAB MENU */
         .admin-floating-hub {
             position: fixed;
             bottom: 30px;
@@ -591,65 +592,28 @@
         .action-sub-btn.btn-primary-action:hover { background: var(--primary); border-color: var(--primary); }
         .action-sub-btn.btn-danger-action:hover { background: var(--danger); border-color: var(--danger); }
 
-        /* -------------------------------------------------------------
-        /* CROSS-DEVICE UNIVERSAL ADAPTIVE RESPONSIVE MEDIA STYLES
-        /* ------------------------------------------------------------- */
-        
-        /* TABLETS VIEWPORTS (COLLAPSES LARGE TWO COLUMN BLOCKS) */
         @media (max-width: 1024px) {
-            .work-grid {
-                grid-template-columns: 1fr;
-            }
-            .work-section {
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
-            }
+            .work-grid { grid-template-columns: 1fr; }
+            .work-section { border-right: none; border-bottom: 1px solid #e2e8f0; }
             .work-section:last-child { border-bottom: none; }
         }
 
-        /* SMARTPHONES & COMPACT viewports CORE ENGINE OVERRIDES */
+        /* HARD-CODED DENSE BREAKPOINTS PREVENTING SMARTPHONE OVERFLOW SQUISHING */
         @media (max-width: 640px) {
-            header {
-                padding: 12px 20px;
-                height: auto;
-                justify-content: center;
-                gap: 12px;
-            }
-            .header-left-cluster {
-                width: 100%;
-                justify-content: center;
-                text-align: center;
-            }
-            .header-right-cluster {
-                width: 100%;
-                justify-content: space-between;
-                gap: 10px;
-            }
-            .client-list {
-                margin-top: 140px; /* Expands margin depth safely preventing overlapping headers */
-            }
-            .demat-row-block {
-                grid-template-columns: 1fr;
-                gap: 4px;
-            }
-            .demat-fields-horizontal {
-                grid-template-columns: 1fr; /* Transforms horiz text columns into dynamic block lines */
-                gap: 10px;
-            }
-            .demat-fields-horizontal .mini-input-cell {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                gap: 10px;
-            }
-            .demat-fields-horizontal span {
-                width: 110px;
-                text-align: left;
-            }
-            .admin-floating-hub {
-                bottom: 20px;
-                right: 20px;
-            }
+            header { padding: 8px 16px; height: auto; justify-content: space-between; gap: 4px; }
+            .header-left-cluster { width: auto; justify-content: flex-start; text-align: left; gap: 8px; }
+            header h1 { font-size: 1.1rem; }
+            .cloud-badge-animated { padding: 4px 8px; font-size: 0.65rem; }
+            .header-right-cluster { width: auto; justify-content: flex-end; gap: 8px; }
+            .nav-month-container { font-size: 0.75rem; gap: 4px; }
+            .nav-month-container input { padding: 4px 8px; font-size: 0.85rem; width: 100px; }
+            .btn-logout-portal { width: 32px; height: 32px; }
+            .client-list { margin-top: calc(var(--nav-height) + 16px); }
+            .demat-row-block { grid-template-columns: 1fr; gap: 4px; }
+            .demat-fields-horizontal { grid-template-columns: 1fr; gap: 10px; }
+            .demat-fields-horizontal .mini-input-cell { flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; }
+            .demat-fields-horizontal span { width: 110px; text-align: left; }
+            .admin-floating-hub { bottom: 20px; right: 20px; }
         }
 
         @media print {
@@ -683,6 +647,32 @@
         <div class="modal-action-row">
             <button class="modal-btn" onclick="closeCustomModalWindow('reset-data-modal-overlay')">Cancel</button>
             <button class="modal-btn btn-danger-confirm" onclick="confirmResetDataModalAction()">Reset Records</button>
+        </div>
+    </div>
+</div>
+
+<!-- SECURE PROFILE ELIMINATION PANEL VERIFICATION MODAL -->
+<div class="dashboard-custom-modal" id="delete-profile-modal-overlay">
+    <div class="modal-content-box">
+        <h3>Security Clearance Required</h3>
+        <p>Are you sure you want to permanently erase this client dataset? Type passkey code to execute execution pipeline paths:</p>
+        <input type="password" id="modal-delete-profile-passkey-field" placeholder="••••••" maxlength="6" onkeydown="if(event.key === 'Enter') executeSecureProfileEliminationPipeline()" />
+        <div class="modal-action-row">
+            <button class="modal-btn" onclick="closeCustomModalWindow('delete-profile-modal-overlay')">Cancel</button>
+            <button class="modal-btn btn-danger-confirm" onclick="executeSecureProfileEliminationPipeline()">Confirm Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- SECURE BROKER REMOVAL VERIFICATION MODAL -->
+<div class="dashboard-custom-modal" id="delete-demat-modal-overlay">
+    <div class="modal-content-box">
+        <h3>Confirm Broker Removal</h3>
+        <p>Type authorization passcode to cleanly extract and delete this demat tracker from memory pools:</p>
+        <input type="password" id="modal-delete-demat-passkey-field" placeholder="••••••" maxlength="6" onkeydown="if(event.key === 'Enter') executeSecureBrokerPurgePipeline()" />
+        <div class="modal-action-row">
+            <button class="modal-btn" onclick="closeCustomModalWindow('delete-demat-modal-overlay')">Cancel</button>
+            <button class="modal-btn btn-danger-confirm" onclick="executeSecureBrokerPurgePipeline()">Remove Broker</button>
         </div>
     </div>
 </div>
@@ -743,6 +733,11 @@
 
     let globalReportingMonth = 'June 2026';
     let masterData = [];
+    
+    // Global pipeline pointer reference containers
+    let targetedClientIdForDeletion = null;
+    let targetedDematClientRef = null;
+    let targetedDematIdForDeletion = null;
 
     window.addEventListener('load', function() {
         if (sessionStorage.getItem('dml_authorized_session') === 'true') {
@@ -824,6 +819,52 @@
         }
     }
 
+    // SECURE PASSKEY-PROTECTED ELIMINATION REDIRECT INTERFACES
+    function requestSecureProfileElimination(clientId) {
+        targetedClientIdForDeletion = clientId;
+        openCustomModalWindow('delete-profile-modal-overlay', 'modal-delete-profile-passkey-field');
+    }
+
+    function executeSecureProfileEliminationPipeline() {
+        const passKeyElement = document.getElementById('modal-delete-profile-passkey-field');
+        if (passKeyElement.value === "031097") {
+            masterData = masterData.filter(c => c.id !== targetedClientIdForDeletion);
+            renderDashboardHTML();
+            saveState();
+            passKeyElement.value = '';
+            targetedClientIdForDeletion = null;
+            closeCustomModalWindow('delete-profile-modal-overlay');
+        } else {
+            alert("Security Breach: Code Verification Invalid.");
+            passKeyElement.value = '';
+        }
+    }
+
+    function requestSecureBrokerPurge(clientId, dematId) {
+        targetedDematClientRef = clientId;
+        targetedDematIdForDeletion = dematId;
+        openCustomModalWindow('delete-demat-modal-overlay', 'modal-delete-demat-passkey-field');
+    }
+
+    function executeSecureBrokerPurgePipeline() {
+        const passKeyElement = document.getElementById('modal-delete-demat-passkey-field');
+        if (passKeyElement.value === "031097") {
+            const client = masterData.find(c => c.id === targetedDematClientRef);
+            if(client) {
+                client.demats = client.demats.filter(d => d.id !== targetedDematIdForDeletion);
+                renderDashboardHTML();
+                saveState();
+            }
+            passKeyElement.value = '';
+            targetedDematClientRef = null;
+            targetedDematIdForDeletion = null;
+            closeCustomModalWindow('delete-demat-modal-overlay');
+        } else {
+            alert("Security Breach: Code Verification Invalid.");
+            passKeyElement.value = '';
+        }
+    }
+
     function downloadLatestCloudData() {
         database.ref('tracker_state').once('value').then((snapshot) => {
             const cloudData = snapshot.val();
@@ -877,13 +918,6 @@
         return (parseInt(day) > 31 || parseInt(month) > 12) ? inputValue.substring(0, 10) : `${day}/${month}/${year}`;
     }
 
-    function removeEntireClientProfile(clientId) {
-        if (confirm("Delete profile?")) {
-            masterData = masterData.filter(c => c.id !== clientId);
-            renderDashboardHTML(); saveState();
-        }
-    }
-
     function updateClientCardName(clientId, value) {
         const target = masterData.find(c => c.id === clientId);
         if(target) { target.name = value.toUpperCase(); saveState(); }
@@ -923,19 +957,13 @@
         if (event.key === 'Escape' || event.keyCode === 27) {
             closeCustomModalWindow('add-client-modal-overlay');
             closeCustomModalWindow('reset-data-modal-overlay');
+            closeCustomModalWindow('delete-profile-modal-overlay');
+            closeCustomModalWindow('delete-demat-modal-overlay');
             if (document.activeElement && (document.activeElement.tagName === 'INPUT')) {
                 document.activeElement.blur(); 
             }
         }
     });
-
-    function removeDematAccount(clientId, dematId) {
-        const client = masterData.find(c => c.id === clientId);
-        if(client) {
-            client.demats = client.demats.filter(d => d.id !== dematId);
-            renderDashboardHTML(); saveState();
-        }
-    }
 
     function handleInputSync(clientId, dematId, key, rawValue, isDemat = false) {
         let parsedValue = parseSmartAccountingDate(rawValue);
@@ -1007,7 +1035,8 @@
                         <div class="demat-card-item">
                             <div class="demat-card-header">
                                 <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
-                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove Broker</button>
+                                <!-- PASSWORD MAPPED RESET HOOK ATTACHMENT -->
+                                <button class="btn-delete-demat" onclick="requestSecureBrokerPurge(${client.id}, ${d.id})">🗑 Remove Broker</button>
                             </div>
                             
                             <div class="demat-row-block">
@@ -1039,7 +1068,8 @@
                 <div class="client-card" id="client-row-${client.id}">
                     <div class="client-header">
                         <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" />
-                        <button class="btn-delete-client" onclick="removeEntireClientProfile(${client.id})">Delete Profile</button>
+                        <!-- PASSWORD MAPPED RESET HOOK ATTACHMENT -->
+                        <button class="btn-delete-client" onclick="requestSecureProfileElimination(${client.id})">Delete Profile</button>
                     </div>
 
                     <div class="work-grid">
@@ -1070,7 +1100,9 @@
                         </div>
                     </div>
 
+                    <!-- MAPPED FIXED REMARKS INLINE LABEL GRID -->
                     <div class="notes-section">
+                        <label>Remarks:</label>
                         <input type="text" class="notes-input" data-client-id="${client.id}" value="${client.internalNotes || ''}" placeholder="Write notes here..." />
                     </div>
                 </div>
