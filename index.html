@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Accounting Master Dashboard</title>
-    <!-- Firebase Cloud Integration Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -35,7 +34,7 @@
             line-height: 1.5;
         }
 
-        /* NEW STRICT SECURITY LOCKSCREEN VISUAL OVERLAY */
+        /* STRICT SECURITY LOCKSCREEN VISUAL OVERLAY */
         #login-overlay {
             position: fixed;
             top: 0;
@@ -449,7 +448,6 @@
 </head>
 <body>
 
-<!-- LIVE APPLICATION PASSWORD ENTRY SCREEN VIEW BLOCK -->
 <div id="login-overlay">
     <div class="login-box">
         <h2>Security Authentication</h2>
@@ -477,7 +475,6 @@
 
             <div class="cloud-status-indicator" id="cloud-status">☁️ Cloud Connected</div>
             
-            <!-- UPDATED LABEL FOR DML ACCOUNTING PRINT ENGINE COMMAND BLOCK -->
             <button class="btn-print-master" onclick="printMasterSummaryPage()">🖨️ Print End-of-Month Master Summary</button>
         </div>
     </header>
@@ -493,7 +490,7 @@
 
 <script>
     // -------------------------------------------------------------
-    // CLOUD SYSTEM LINK PORT (STAYS LINKED FOREVER VIA INDEPENDENT APIS)
+    // CLOUD DATABASE SYNC ENGINE PORT
     // -------------------------------------------------------------
     const firebaseConfig = {
         databaseURL: "https://family-tracker-34c83-default-rtdb.firebaseio.com/" 
@@ -519,14 +516,11 @@
         { id: 10, name: "KIARA DARSHAN LAKHANI", bankEntryDate: '', bankFilingDate: '', internalNotes: '', demats: [{ id: 110, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }] }
     ];
 
-    // PASSWORD UNLOCK INTERCEPTOR LOGIC: Blocks rendering until verified
     function verifyAppMasterGateAccess() {
         const passwordInputVal = document.getElementById('app-passkey-input').value;
         if(passwordInputVal === "031097") {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-app-layout').style.display = 'block';
-            
-            // Connect to Cloud Listener node only after unlocking safely
             connectAndDownloadCloudDatabase();
         } else {
             alert("Security Code Invalid: Access Rejected.");
@@ -534,7 +528,6 @@
         }
     }
 
-    // Capture Enter Key triggers specifically for our new password prompt box layout
     document.getElementById('app-passkey-input').addEventListener('keydown', function(e) {
         if(e.key === 'Enter') verifyAppMasterGateAccess();
     });
@@ -545,8 +538,9 @@
             document.getElementById('cloud-status').innerText = "☁️ Cloud Synced";
             document.getElementById('cloud-status').style.background = "#e8f8f5";
             
-            if (cloudData) {
-                masterData = cloudData.masterData || fallbackDefaultBlueprints;
+            // CRITICAL UPGRADE FIX: If cloud node returns empty/null, force trigger default blueprints immediately
+            if (cloudData && cloudData.masterData && cloudData.masterData.length > 0) {
+                masterData = cloudData.masterData;
                 globalReportingMonth = cloudData.globalReportingMonth || 'June 2026';
             } else {
                 masterData = fallbackDefaultBlueprints;
@@ -631,7 +625,7 @@
         const candidateName = inputField.value.trim().toUpperCase();
         
         if (!candidateName) {
-            alert("Please type a valid client identity name.");
+            alert("Please type a valid client name.");
             return;
         }
 
@@ -702,11 +696,21 @@
         saveState();
     }
 
+    // NEW ATTACHED DIRECT SELECTION PIPELINE: Instantly runs the blur format logic on picker syncs
     function handlePickerSync(clientId, dematId, key, dateVal, isDemat = false) {
         if (!dateVal) return;
         const [yyyy, mm, dd] = dateVal.split('-');
         const formattedStr = `${dd}/${mm}/${yyyy}`;
-        handleInputSync(clientId, dematId, key, formattedStr, isDemat);
+        
+        if (isDemat) {
+            const client = masterData.find(c => c.id === clientId);
+            const d = client?.demats.find(dm => dm.id === dematId);
+            if (d) { d[key] = formattedStr; }
+        } else {
+            const client = masterData.find(c => c.id === clientId);
+            if (client) { client[key] = formattedStr; }
+        }
+        saveState();
     }
 
     function printMasterSummaryPage() {
@@ -719,7 +723,6 @@
             let dematCol = '<ul class="print-ul">';
             if(c.demats.length === 0) dematCol += '<li>No Accounts</li>';
             c.demats.forEach(d => {
-                // FIXED LAYOUT LABELS output matching user criteria explicitly text mappings
                 dematCol += `<li>
                     <strong>${d.name}:</strong><br>
                     Entries &rarr; [Ledger: ${d.entryLedger || '—'} | CN: ${d.entryContract || '—'} | PL: ${d.entryPnl || '—'}]<br>
@@ -782,7 +785,7 @@
                     <div class="demat-card-item">
                         <div class="demat-card-header">
                             <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" style="border-bottom:1px dashed #cbd5e1;" />
-                            <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑️ Remove Broker</button>
+                            <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑7 Remove Broker</button>
                         </div>
                         
                         <div class="demat-row-block">
@@ -842,8 +845,8 @@
                 `;
             });
 
-            const bEntryClass = client.bankEntryDate.trim() !== '' ? 'has-date' : 'empty-date';
-            const bFileClass = client.bankFilingDate.trim() !== '' ? 'has-date' : 'empty-date';
+            const bEntryClass = client.bankEntryDate?.trim() !== '' ? 'has-date' : 'empty-date';
+            const bFileClass = client.bankFilingDate?.trim() !== '' ? 'has-date' : 'empty-date';
 
             const cardHTML = `
                 <div class="client-card" id="client-row-${client.id}">
@@ -859,7 +862,7 @@
                             <div class="input-group">
                                 <label>Accounting Entries (statement till this date is updated)</label>
                                 <div class="date-input-container">
-                                    <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
+                                    <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
                                     <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, null, 'bankEntryDate', this.value)" /></div>
                                 </div>
                             </div>
@@ -867,7 +870,7 @@
                             <div class="input-group" style="margin-top: 20px;">
                                 <label>Filing (statement till this date is filed)</label>
                                 <div class="date-input-container">
-                                    <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
+                                    <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onfocus="this.select()" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
                                     <div class="picker-wrapper"><input type="date" onchange="handlePickerSync(${client.id}, null, 'bankFilingDate', this.value)" /></div>
                                 </div>
                             </div>
@@ -914,7 +917,7 @@
             saveState();
             alert("Database cleared and reset online successfully.");
         } else {
-            alert("Security Access Denied: Invalid authentication passkey credentials.");
+            alert("Security Access Denied: Invalid credentials.");
         }
     }
 </script>
