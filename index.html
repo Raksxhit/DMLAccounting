@@ -264,7 +264,14 @@
         }
 
         .action-sub-btn:hover { background: #0f172a; color: white; border-color: #0f172a; }
-        .action-sub-btn.btn-primary-action:hover { background: var(--primary); border-color: var(--primary); }
+        
+        /* Fixed visibility: text changes cleanly to white on dark slate background */
+        .action-sub-btn.btn-primary-action:hover { 
+            background: #1e293b; 
+            color: #ffffff; 
+            border-color: #1e293b; 
+        }
+        
         .action-sub-btn.btn-danger-action:hover { background: var(--danger); border-color: var(--danger); }
 
         /* RESPONSIVE BREAKPOINTS */
@@ -817,7 +824,12 @@
                         <div class="work-section">
                             <h4 style="display:flex; justify-content:space-between; align-items:center;">
                                 <span>II. Demat Tracker</span>
-                                <button style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer;" onclick="addDematAccount(${client.id})">+ Add Demat</button>
+                                <button style="background:none; border:none; color:var(--text-light); font-weight:bold; cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" 
+        onmouseover="this.style.backgroundColor='var(--success)'; this.style.color='#ffffff';" 
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-light)';" 
+        onclick="addDematAccount(${client.id})">
+    + Add Demat
+</button>
                             </h4>
                             <div class="demat-wrapper">${dematsHTML}</div>
                         </div>
