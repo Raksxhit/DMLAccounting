@@ -2,222 +2,1063 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DML Accounting Tracker</title>
+    <!-- Firebase Cloud Integration Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --primary: #2563eb; --danger: #ef4444; --success: #10b981; --dark: #0f172a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-        body { background-color: #f1f5f9; color: var(--dark); padding: 0; }
+        :root {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-light: #64748b;
+            --border-color: #cbd5e1;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --nav-height: 70px;
+        }
 
-        /* VIBRATE ANIMATION */
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .vibrate { animation: shake 0.35s ease-in-out; border-color: var(--danger) !important; box-shadow: 0 0 5px var(--danger); }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
 
-        /* LOCKSCREEN */
-        #login-overlay { position: fixed; top:0; left:0; width: 100vw; height: 100vh; background: var(--dark); display: flex; justify-content: center; align-items: center; z-index: 999999; }
-        .login-box { background: #fff; padding: 30px; border-radius: 16px; width: 90%; max-width: 320px; text-align: center; }
-        .login-box input { width: 100%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 1.5rem; letter-spacing: 5px; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 0;
+            line-height: 1.4;
+        }
 
-        /* HEADER */
-        header { position: fixed; top:0; width: 100%; height: 60px; background: #0f172a; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 9999; }
-        header h1 { font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* PORTAL LOCKSCREEN OVERLAY */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            flex-direction: column;
+        }
+
+        .login-box {
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 360px;
+        }
+
+        .login-box h2 {
+            font-size: 1.4rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .login-box p {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1.25rem;
+            text-align: center;
+            letter-spacing: 6px;
+            margin-bottom: 16px;
+            background-color: #f8fafc;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* CUSTOM METRIC WORKSPACE DIALOG ARCHITECTURE */
+        .dashboard-custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease-in-out;
+            padding: 15px;
+        }
+
+        .dashboard-custom-modal.is-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content-box {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+            transform: scale(0.92);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .dashboard-custom-modal.is-active .modal-content-box { transform: scale(1); }
+
+        .modal-content-box h3 {
+            font-size: 1.15rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .modal-content-box p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .modal-content-box input[type="text"], 
+        .modal-content-box input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            outline: none;
+            background: #f8fafc;
+        }
+
+        .modal-action-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+        }
+
+        .modal-btn.btn-confirm { background: var(--primary); color: white; border: none; }
+        .modal-btn.btn-danger-confirm { background: var(--danger); color: white; border: none; }
+
+        .container {
+            max-width: 1550px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: none; 
+        }
+
+        /* RESPONSIVE NAVIGATION BAR */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: var(--nav-height);
+            background-color: #0f172a;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-bottom: 2px solid #334155;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .header-left-cluster {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .cloud-badge-animated {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #1e293b;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            white-space: nowrap;
+        }
+
+        .cloud-pulse-dot {
+            width: 7px;
+            height: 7px;
+            background-color: var(--success);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .cloud-pulse-dot::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--success);
+            border-radius: 50%;
+            animation: cloudSyncBreathe 2s infinite ease-in-out;
+        }
+
+        @keyframes cloudSyncBreathe {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.6); opacity: 0; }
+        }
+
+        .cloud-badge-animated.is-syncing {
+            background: #3f2b0f;
+            color: #f59e0b;
+            border-color: #78350f;
+        }
+        .cloud-badge-animated.is-syncing .cloud-pulse-dot { background-color: var(--warning); animation: cloudSpinLoader 1s infinite linear; }
+        .cloud-badge-animated.is-syncing .cloud-pulse-dot::after { display: none; }
+
+        @keyframes cloudSpinLoader {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-right-cluster {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-month-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .nav-month-container input {
+            padding: 6px 12px;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            width: 135px;
+            background: #1e293b;
+            text-align: center;
+            outline: none;
+        }
+
+        .btn-logout-portal {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout-portal:hover { background-color: #7f1d1d; color: #fca5a5; border-color: #b91c1c; }
+
+        .client-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: calc(var(--nav-height) + 20px);
+            padding-bottom: 120px; 
+        }
+
+        .client-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #cbd5e1;
+            overflow: hidden;
+        }
+
+        .client-header {
+            background: #f8fafc;
+            padding: 10px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .client-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            border: none;
+            background: transparent;
+            width: 100%;
+            max-width: 450px;
+            outline: none;
+            text-overflow: ellipsis;
+        }
+
+        .btn-delete-client {
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .btn-delete-client:hover { color: var(--danger); }
+
+        /* MULTI-DEVICE DEVICE ADAPTIVE GRID SYSTEMS */
+        .work-grid {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            padding: 0;
+            background: #ffffff;
+        }
+
+        .work-section {
+            padding: 12px 16px;
+            border-right: 1px solid #e2e8f0;
+        }
+        .work-section:last-child { border-right: none; }
+
+        .work-section h4 {
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            font-weight: 700;
+        }
+
+        .compact-input-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .compact-input-row:last-child { margin-bottom: 0; }
+
+        .compact-input-row label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #334155;
+            width: 65px;
+            flex-shrink: 0;
+        }
+
+        .date-input-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .date-input-container input[type="text"] {
+            width: 100%;
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            background: #ffffff;
+        }
+
+        .picker-wrapper {
+            position: relative;
+            width: 32px;
+            height: 30px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background: #f1f5f9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2.5'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") no-repeat center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .picker-wrapper input[type="date"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+        }
+
+        input.has-date { background-color: #ecfdf5 !important; color: #065f46 !important; font-weight: 700; border-color: #a7f3d0 !important; }
+
+        .demat-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .demat-card-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 14px;
+        }
+
+        .demat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .demat-name-input {
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            color: #1e293b;
+            background: transparent;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .btn-delete-demat { 
+            background: transparent; 
+            color: #64748b; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-delete-demat:hover { color: #ffffff; background-color: var(--danger); }
+
+        .demat-row-block {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .demat-row-block:last-child { margin-bottom: 0; }
+
+        .sub-block-title { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em; }
+
+        .demat-fields-horizontal { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px; 
+            width: 100%;
+        }
+
+        .demat-fields-horizontal .mini-input-cell { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 4px; 
+            width: 100%;
+        }
         
-        /* RESPONSIVE LAYOUT */
-        .container { margin-top: 80px; padding: 0 10px; display: none; }
-        .client-list { display: flex; flex-direction: column; gap: 15px; padding-bottom: 100px; }
-        .client-card { background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; }
-        .client-header { padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
-        .client-title { font-size: 0.95rem; font-weight: 700; border: none; width: 60%; }
-        
-        .work-grid { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 12px; }
-        @media (min-width: 768px) { .work-grid { grid-template-columns: 1fr 2fr; } }
+        .demat-fields-horizontal span { font-size: 0.8rem; color: #334155; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
-        .work-section h4 { font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-bottom: 8px; }
-        .compact-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-        .compact-input-row label { font-size: 0.8rem; width: 50px; font-weight: 600; }
-        .date-input-container { display: flex; flex-grow: 1; gap: 4px; }
-        input[type="text"] { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem; }
-        .picker-wrapper { width: 30px; height: 30px; border: 1px solid #ddd; border-radius: 4px; background: #eee; cursor: pointer; }
-        
-        .demat-wrapper { display: flex; flex-direction: column; gap: 8px; }
-        .demat-card-item { background: #f8fafc; padding: 10px; border-radius: 6px; }
-        .demat-fields-horizontal { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
-        .mini-input-cell { display: flex; flex-direction: column; font-size: 0.7rem; }
-        
-        .notes-section { padding: 10px; display: flex; align-items: center; gap: 8px; border-top: 1px solid #f1f5f9; }
-        .notes-section label { font-size: 0.8rem; font-weight: 700; }
+        .notes-section { padding: 8px 16px 12px 16px; border-top: 1px solid #edf2f7; background: #fafafa; }
+        .notes-section input[type="text"] { width: 100%; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; }
 
-        /* FAB HUB */
-        .admin-floating-hub { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
-        .fab-trigger-gear { width: 50px; height: 50px; background: #0f172a; border-radius: 50%; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .floating-menu-options-list { position: absolute; bottom: 60px; right: 0; display: none; flex-direction: column; gap: 8px; }
-        .admin-floating-hub:hover .floating-menu-options-list { display: flex; }
-        .action-sub-btn { padding: 10px 20px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; width: 150px; text-align: center; font-weight: 600; font-size: 0.85rem; }
+        /* RESPONSIVE FLOATING HUB MENU CHANNELS */
+        .admin-floating-hub {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: inline-flex;
+            flex-direction: column-reverse;
+            align-items: flex-end;
+            gap: 12px;
+            z-index: 99999;
+            width: auto;
+            height: auto;
+        }
+
+        .fab-trigger-gear {
+            width: 56px;
+            height: 56px;
+            background-color: #0f172a;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .floating-menu-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(15px);
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+
+        .fab-trigger-gear:hover + .floating-menu-options-list,
+        .admin-floating-hub:hover .floating-menu-options-list { 
+            opacity: 1; 
+            pointer-events: auto; 
+            transform: translateY(0); 
+        }
+        
+        .admin-floating-hub:hover .fab-trigger-gear { background-color: var(--primary); transform: rotate(45deg); }
+
+        .action-sub-btn {
+            background: white;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 12px 0;
+            width: 170px; 
+            text-align: center;
+            border-radius: 25px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .action-sub-btn:hover { background: #0f172a; color: white; border-color: #0f172a; }
+        .action-sub-btn.btn-primary-action:hover { background: var(--primary); border-color: var(--primary); }
+        .action-sub-btn.btn-danger-action:hover { background: var(--danger); border-color: var(--danger); }
+
+        /* -------------------------------------------------------------
+        /* CRITICAL MULTI-DEVICE DEVICE RESPONSIVE MEDIA BREAKPOINTS MEDIA STRIPS
+        /* ------------------------------------------------------------- */
+        
+        /* TABLETS & REGULAR SCREEN PHONES BREAKPOINT DEPLOYMENT */
+        @media (max-width: 1024px) {
+            .work-grid {
+                grid-template-columns: 1fr; /* Collapses columns vertically */
+            }
+            .work-section {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .work-section:last-child { border-bottom: none; }
+        }
+
+        /* SMARTPHONES & COMPACT MOBILE CORES DEVICE BREAKPOINTS LAYER */
+        @media (max-width: 640px) {
+            header {
+                padding: 12px 20px;
+                height: auto; /* Allow navbar height to auto-wrap details safely */
+                justify-content: center;
+                gap: 10px;
+            }
+            .header-left-cluster {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+            .header-right-cluster {
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .client-list {
+                margin-top: 130px; /* Expand separation margins to match wrapped double-layered header */
+            }
+            .demat-row-block {
+                grid-template-columns: 1fr; /* Drop title layout flags overhead */
+                gap: 4px;
+            }
+            .demat-fields-horizontal {
+                grid-template-columns: 1fr; /* Break inline triplets down to standalone rows */
+                gap: 10px;
+            }
+            .demat-fields-horizontal .mini-input-cell {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .demat-fields-horizontal span {
+                width: 100px;
+                text-align: left;
+            }
+            .admin-floating-hub {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            .container, .notes-section, #login-overlay, .admin-floating-hub, header, .dashboard-custom-modal { display: none !important; }
+            #print-mount { display: block !important; width: 100%; }
+            .print-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+            .print-table th, .print-table td { border: 1px solid #000; padding: 4px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="dashboard-custom-modal" id="add-client-modal-overlay">
     <div class="modal-content-box">
-        <h3>Add Client</h3>
-        <input type="text" id="modal-client-name-field" placeholder="Client Name" />
+        <h3>Register New Account</h3>
+        <p>Please type the client legal profile name:</p>
+        <input type="text" id="modal-client-name-field" placeholder="e.g., CHIRAG LAKHANI" onkeydown="if(event.key === 'Enter') confirmAddClientModalAction()" />
         <div class="modal-action-row">
             <button class="modal-btn" onclick="closeCustomModalWindow('add-client-modal-overlay')">Cancel</button>
-            <button class="modal-btn btn-confirm" onclick="confirmAddClientModalAction()">OK</button>
+            <button class="modal-btn btn-confirm" onclick="confirmAddClientModalAction()">Create Account</button>
         </div>
     </div>
 </div>
 
-<div class="dashboard-custom-modal" id="secure-pass-modal-overlay">
+<div class="dashboard-custom-modal" id="reset-data-modal-overlay">
     <div class="modal-content-box">
-        <h3 id="modal-title">Enter Passkey</h3>
-        <input type="password" id="modal-passkey-field" placeholder="••••••" />
+        <h3>Reset Monthly Progress</h3>
+        <p>Enter administrative verification passcode to safely wipe records:</p>
+        <input type="password" id="modal-reset-passkey-field" placeholder="••••••" maxlength="6" onkeydown="if(event.key === 'Enter') confirmResetDataModalAction()" />
         <div class="modal-action-row">
-            <button class="modal-btn" onclick="closeCustomModalWindow('secure-pass-modal-overlay')">Cancel</button>
-            <button class="modal-btn btn-danger-confirm" id="modal-confirm-btn">Confirm</button>
+            <button class="modal-btn" onclick="closeCustomModalWindow('reset-data-modal-overlay')">Cancel</button>
+            <button class="modal-btn btn-danger-confirm" onclick="confirmResetDataModalAction()">Reset Records</button>
         </div>
     </div>
 </div>
 
 <div id="login-overlay">
     <div class="login-box">
-        <h2>DML Tracker</h2>
+        <h2>Security Authentication</h2>
+        <p>Please type your access code to run dashboard entries</p>
         <input type="password" id="app-passkey-input" placeholder="••••••" maxlength="6" autofocus />
+        <button onclick="verifyAppMasterGateAccess()">Unlock System</button>
     </div>
 </div>
 
 <div class="container" id="main-app-layout">
     <header>
-        <h1>DML Accounting Tracker</h1>
-        <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()">🔒</button>
+        <div class="header-left-cluster">
+            <h1>DML Accounting Tracker</h1>
+            <div class="cloud-badge-animated" id="cloud-status-badge">
+                <div class="cloud-pulse-dot"></div>
+                <span id="cloud-status-text">Cloud Sync Live</span>
+            </div>
+        </div>
+        
+        <div class="header-right-cluster">
+            <div class="nav-month-container">
+                <span>Period:</span>
+                <input type="text" id="global-month-input" placeholder="June 2026" onchange="updateGlobalMonth(this.value)">
+            </div>
+            <button class="btn-logout-portal" onclick="triggerManualSecurePortalLogout()" title="Lock Session">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+            </button>
+        </div>
     </header>
 
     <div class="admin-floating-hub">
-        <div class="fab-trigger-gear">⚙️</div>
+        <div class="fab-trigger-gear">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2v.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </div>
         <div class="floating-menu-options-list">
-            <button class="action-sub-btn" onclick="openCustomModalWindow('add-client-modal-overlay')">Add Client</button>
-            <button class="action-sub-btn" onclick="printMasterSummaryPage()">Print Summary</button>
-            <button class="action-sub-btn" onclick="requestSecureAction('reset')">Reset Data</button>
+            <button class="action-sub-btn btn-primary-action" onclick="openCustomModalWindow('add-client-modal-overlay', 'modal-client-name-field')">➕ Add Client</button>
+            <button class="action-sub-btn" onclick="printMasterSummaryPage()">🖨️ Print Summary</button>
+            <button class="action-sub-btn btn-danger-action" onclick="openCustomModalWindow('reset-data-modal-overlay', 'modal-reset-passkey-field')">🧹 Reset Data</button>
         </div>
     </div>
 
     <div class="client-list" id="client-container"></div>
 </div>
 
+<div id="print-mount"></div>
+
 <script>
+    const firebaseConfig = {
+        databaseURL: "https://family-tracker-56b23-default-rtdb.firebaseio.com/" 
+    };
+    
+    firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+
+    let globalReportingMonth = 'June 2026';
     let masterData = [];
 
-    // AUTO-LOGIN LOGIC
-    document.getElementById('app-passkey-input').addEventListener('input', function(e) {
-        if (e.target.value === "031097") {
-            sessionStorage.setItem('dml_authorized_session', 'true');
+    window.addEventListener('load', function() {
+        if (sessionStorage.getItem('dml_authorized_session') === 'true') {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-app-layout').style.display = 'block';
             downloadLatestCloudData();
-        } else if (e.target.value.length === 6) {
-            e.target.classList.add('vibrate');
-            setTimeout(() => e.target.classList.remove('vibrate'), 700);
-            e.target.value = '';
         }
     });
 
-    // SECURITY MODAL HANDLERS
-    let pendingAction = { type: '', clientId: null, dematId: null };
-    function requestSecureAction(type, clientId, dematId) {
-        pendingAction = { type, clientId, dematId };
-        document.getElementById('modal-title').innerText = "Enter Passkey";
-        openCustomModalWindow('secure-pass-modal-overlay', 'modal-passkey-field');
+    function verifyAppMasterGateAccess() {
+        const passwordInputVal = document.getElementById('app-passkey-input').value;
+        if(passwordInputVal === "031097") {
+            sessionStorage.setItem('dml_authorized_session', 'true'); 
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-app-layout').style.display = 'block';
+            downloadLatestCloudData();
+        } else {
+            alert("Security Code Invalid.");
+            document.getElementById('app-passkey-input').value = '';
+        }
     }
 
-    document.getElementById('modal-confirm-btn').onclick = function() {
-        const pass = document.getElementById('modal-passkey-field').value;
-        if(pass === "031097") {
-            if(pendingAction.type === 'deleteProfile') deleteProfile(pendingAction.clientId);
-            if(pendingAction.type === 'deleteDemat') deleteDemat(pendingAction.clientId, pendingAction.dematId);
-            if(pendingAction.type === 'reset') resetData();
-            document.getElementById('modal-passkey-field').value = '';
-            closeCustomModalWindow('secure-pass-modal-overlay');
-        } else {
-            document.getElementById('modal-passkey-field').classList.add('vibrate');
-            setTimeout(() => document.getElementById('modal-passkey-field').classList.remove('vibrate'), 700);
-            document.getElementById('modal-passkey-field').value = '';
-        }
-    };
+    function triggerManualSecurePortalLogout() {
+        sessionStorage.removeItem('dml_authorized_session');
+        document.getElementById('main-app-layout').style.display = 'none';
+        document.getElementById('login-overlay').style.display = 'flex';
+    }
 
-    // UI/SYNC LOGIC
+    function openCustomModalWindow(overlayId, focusId) {
+        document.getElementById(overlayId).classList.add('is-active');
+        if (focusId) setTimeout(() => document.getElementById(focusId).focus(), 100);
+    }
+
+    function closeCustomModalWindow(overlayId) {
+        document.getElementById(overlayId).classList.remove('is-active');
+    }
+
+    function confirmAddClientModalAction() {
+        const inputField = document.getElementById('modal-client-name-field');
+        const candidateName = inputField.value.trim().toUpperCase();
+        if (!candidateName) return;
+
+        const uniqueId = Date.now();
+        masterData.push({
+            id: uniqueId, name: candidateName, bankEntryDate: '', bankFilingDate: '', internalNotes: '',
+            demats: [{ id: uniqueId + 1, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }]
+        });
+        renderDashboardHTML();
+        saveState();
+        inputField.value = '';
+        closeCustomModalWindow('add-client-modal-overlay');
+    }
+
+    function confirmResetDataModalAction() {
+        const passkeyField = document.getElementById('modal-reset-passkey-field');
+        if (passkeyField.value === "031097") {
+            masterData.forEach(client => {
+                client.bankEntryDate = ''; client.bankFilingDate = ''; client.internalNotes = '';
+                if(client.demats) {
+                    client.demats.forEach(d => {
+                        d.entryLedger = ''; d.entryContract = ''; d.entryPnl = '';
+                        d.fileLedger = ''; d.fileContract = ''; d.filePnl = '';
+                    });
+                }
+            });
+            renderDashboardHTML();
+            saveState();
+            passkeyField.value = '';
+            closeCustomModalWindow('reset-data-modal-overlay');
+        } else {
+            alert("Invalid passkey.");
+            passkeyField.value = '';
+        }
+    }
+
+    function downloadLatestCloudData() {
+        database.ref('tracker_state').once('value').then((snapshot) => {
+            const cloudData = snapshot.val();
+            if (cloudData && cloudData.masterData) {
+                masterData = cloudData.masterData;
+                globalReportingMonth = cloudData.globalReportingMonth || 'June 2026';
+            }
+            document.getElementById('global-month-input').value = globalReportingMonth;
+            renderDashboardHTML(); 
+        });
+    }
+
     function saveState() {
-        database.ref('tracker_state').set({ masterData: masterData });
+        const badge = document.getElementById('cloud-status-badge');
+        const text = document.getElementById('cloud-status-text');
+        badge.classList.add('is-syncing');
+        text.innerText = "Syncing...";
+
+        database.ref('tracker_state').set({
+            masterData: masterData, globalReportingMonth: globalReportingMonth
+        }).then(() => {
+            setTimeout(() => {
+                badge.classList.remove('is-syncing');
+                text.innerText = "Synced";
+            }, 200);
+        });
+    }
+
+    function updateGlobalMonth(val) { globalReportingMonth = val; saveState(); }
+
+    function parseSmartAccountingDate(inputValue) {
+        let input = inputValue.trim().replace(/[^0-9\s\/]/g, ''); 
+        if (!input) return '';
+        let parts = input.split(/[\s\/]+/).filter(p => p.length > 0);
+        if (parts.length === 1 && parts[0].length >= 8) {
+            let cleanDigits = parts[0].substring(0, 8);
+            return `${cleanDigits.substring(0, 2)}/${cleanDigits.substring(2, 4)}/${cleanDigits.substring(4, 8)}`;
+        }
+        let today = new Date();
+        let currentMonth = String(today.getMonth() + 1).padStart(2, '0'); 
+        let currentYear = String(today.getFullYear()); 
+        let day = '', month = '', year = '';
+
+        if (parts.length === 1) { day = parts[0].substring(0, 2).padStart(2, '0'); month = currentMonth; year = currentYear; }
+        else if (parts.length === 2) { day = parts[0].substring(0, 2).padStart(2, '0'); month = parts[1].substring(0, 2).padStart(2, '0'); year = currentYear; }
+        else if (parts.length >= 3) {
+            day = parts[0].substring(0, 2).padStart(2, '0'); month = parts[1].substring(0, 2).padStart(2, '0');
+            let rawYear = parts[2].substring(0, 4);
+            year = rawYear.length === 2 ? '20' + rawYear : rawYear.padStart(4, '0');
+        }
+        return (parseInt(day) > 31 || parseInt(month) > 12) ? inputValue.substring(0, 10) : `${day}/${month}/${year}`;
+    }
+
+    function removeEntireClientProfile(clientId) {
+        if (confirm("Delete profile?")) {
+            masterData = masterData.filter(c => c.id !== clientId);
+            renderDashboardHTML(); saveState();
+        }
+    }
+
+    function updateClientCardName(clientId, value) {
+        const target = masterData.find(c => c.id === clientId);
+        if(target) { target.name = value.toUpperCase(); saveState(); }
+    }
+
+    document.addEventListener('change', function(e) {
+        if(e.target && e.target.classList.contains('notes-input')) {
+            const cid = e.target.getAttribute('data-client-id');
+            const target = masterData.find(c => c.id == cid);
+            if(target) { target.internalNotes = e.target.value; saveState(); }
+        }
+    });
+
+    function updateDematName(clientId, dematId, value) {
+        const client = masterData.find(c => c.id === clientId);
+        const d = client?.demats.find(dm => dm.id === dematId);
+        if (d) { d.name = value; saveState(); }
+    }
+
+    function addDematAccount(clientId) {
+        const client = masterData.find(c => c.id === clientId);
+        if(client) {
+            client.demats.push({
+                id: Date.now(), name: 'New Broker A/c', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: ''
+            });
+            renderDashboardHTML(); saveState();
+        }
+    }
+
+    function forceCalendarPickerTrigger(event, elementId) {
+        event.preventDefault(); event.stopPropagation();
+        const targetedInput = document.getElementById(elementId);
+        if (targetedInput && typeof targetedInput.showPicker === 'function') targetedInput.showPicker();
+    }
+
+    function removeDematAccount(clientId, dematId) {
+        const client = masterData.find(c => c.id === clientId);
+        if(client) {
+            client.demats = client.demats.filter(d => d.id !== dematId);
+            renderDashboardHTML(); saveState();
+        }
+    }
+
+    function handleInputSync(clientId, dematId, key, rawValue, isDemat = false) {
+        let parsedValue = parseSmartAccountingDate(rawValue);
+        if (isDemat) {
+            const client = masterData.find(c => c.id === clientId);
+            const d = client?.demats.find(dm => dm.id === dematId);
+            if (d) d[key] = parsedValue;
+        } else {
+            const client = masterData.find(c => c.id === clientId);
+            if (client) client[key] = parsedValue;
+        }
+        const el = document.getElementById(dematId ? `txt-${clientId}-${dematId}-${key}` : `txt-${key}-${clientId}`);
+        if(el) { el.value = parsedValue; el.className = parsedValue !== '' ? 'has-date' : 'empty-date'; }
+        saveState();
+    }
+
+    function handlePickerSync(clientId, dematId, key, dateVal, isDemat = false) {
+        if (!dateVal) return;
+        const [yyyy, mm, dd] = dateVal.split('-');
+        const formattedStr = `${dd}/${mm}/${yyyy}`;
+        if (isDemat) {
+            const client = masterData.find(c => c.id === clientId);
+            const d = client?.demats.find(dm => dm.id === dematId);
+            if (d) d[key] = formattedStr;
+        } else {
+            const client = masterData.find(c => c.id === clientId);
+            if (client) client[key] = formattedStr;
+        }
+        const el = document.getElementById(dematId ? `txt-${clientId}-${dematId}-${key}` : `txt-${key}-${clientId}`);
+        if(el) { el.value = formattedStr; el.className = 'has-date'; }
+        saveState();
+    }
+
+    function printMasterSummaryPage() {
+        const mount = document.getElementById('print-mount');
+        let rowsHTML = '';
+        masterData.forEach(c => {
+            let bankCol = `Entries: ${c.bankEntryDate || '❌'}<br>Filing: ${c.bankFilingDate || '❌'}`;
+            let dematCol = '<ul style="padding-left:10px; margin:0;">';
+            if(!c.demats || c.demats.length === 0) dematCol += '<li>None</li>';
+            else {
+                c.demats.forEach(d => {
+                    dematCol += `<li><strong>${d.name}</strong><br>Ent &rarr; Ledger:${d.entryLedger || '—'}|Contract Notes:${d.entryContract || '—'}|P&L:${d.entryPnl || '—'}<br>Fil &rarr; Ledger:${d.fileLedger || '—'}|Contract Notes:${d.fileContract || '—'}|P&L:${d.filePnl || '—'}</li>`;
+                });
+            }
+            dematCol += '</ul>';
+            rowsHTML += `<tr><td><strong>${c.name}</strong></td><td>${bankCol}</td><td>${dematCol}</td><td>${c.internalNotes || '-'}</td></tr>`;
+        });
+        mount.innerHTML = `<h2 style="text-align:center; margin-bottom:10px;">Master Monthly Progress Sheet (${globalReportingMonth})</h2><table class="print-table"><thead><tr><th>Client Name</th><th>Bank Account</th><th>Demat Accounts Summary</th><th>Remarks</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
+        window.print();
     }
 
     function renderDashboardHTML() {
         const container = document.getElementById('client-container');
         container.innerHTML = '';
+
         masterData.forEach(client => {
             let dematsHTML = '';
-            client.demats.forEach(d => {
-                dematsHTML += `
-                    <div class="demat-card-item">
-                        <div class="demat-card-header">
-                            <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
-                            <button class="btn-delete-demat" onclick="requestSecureAction('deleteDemat', ${client.id}, ${d.id})">Remove</button>
-                        </div>
-                        <div class="demat-row-block">
-                            <div class="sub-block-title">📊 Entries</div>
-                            <div class="demat-fields-horizontal">
-                                <div class="mini-input-cell"><span>Ledger</span><input type="text" value="${d.entryLedger}" onchange="handleDematSync(${client.id}, ${d.id}, 'entryLedger', this.value)" /></div>
-                                <div class="mini-input-cell"><span>Contract Notes</span><input type="text" value="${d.entryContract}" onchange="handleDematSync(${client.id}, ${d.id}, 'entryContract', this.value)" /></div>
-                                <div class="mini-input-cell"><span>P&L</span><input type="text" value="${d.entryPnl}" onchange="handleDematSync(${client.id}, ${d.id}, 'entryPnl', this.value)" /></div>
+            if(client.demats) {
+                client.demats.forEach(d => {
+                    const eLClass = d.entryLedger.trim() !== '' ? 'has-date' : 'empty-date';
+                    const eCClass = d.entryContract.trim() !== '' ? 'has-date' : 'empty-date';
+                    const ePClass = d.entryPnl.trim() !== '' ? 'has-date' : 'empty-date';
+                    const fLClass = d.fileLedger.trim() !== '' ? 'has-date' : 'empty-date';
+                    const fCClass = d.fileContract.trim() !== '' ? 'has-date' : 'empty-date';
+                    const fPClass = d.filePnl.trim() !== '' ? 'has-date' : 'empty-date';
+
+                    dematsHTML += `
+                        <div class="demat-card-item">
+                            <div class="demat-card-header">
+                                <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
+                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove Broker</button>
+                            </div>
+                            
+                            <div class="demat-row-block">
+                                <div class="sub-block-title">📊 Entries</div>
+                                <div class="demat-fields-horizontal">
+                                    <div class="mini-input-cell"><span>Ledger</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryLedger" class="${eLClass}" value="${d.entryLedger}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryLedger')"><input type="date" id="pkr-${client.id}-${d.id}-entryLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryLedger', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>Contract Notes</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryContract" class="${eCClass}" value="${d.entryContract}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryContract')"><input type="date" id="pkr-${client.id}-${d.id}-entryContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryContract', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>P&L</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryPnl" class="${ePClass}" value="${d.entryPnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')"><input type="date" id="pkr-${client.id}-${d.id}-entryPnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /></div></div></div>
+                                </div>
+                            </div>
+
+                            <div class="demat-row-block">
+                                <div class="sub-block-title">📁 Filing</div>
+                                <div class="demat-fields-horizontal">
+                                    <div class="mini-input-cell"><span>Ledger</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-fileLedger" class="${fLClass}" value="${d.fileLedger}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileLedger')"><input type="date" id="pkr-${client.id}-${d.id}-fileLedger" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileLedger', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>Contract Notes</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-fileContract" class="${fCClass}" value="${d.fileContract}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-fileContract')"><input type="date" id="pkr-${client.id}-${d.id}-fileContract" onchange="handlePickerSync(${client.id}, ${d.id}, 'fileContract', this.value, true)" /></div></div></div>
+                                    <div class="mini-input-cell"><span>P&L</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-filePnl" class="${fPClass}" value="${d.filePnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')"><input type="date" id="pkr-${client.id}-${d.id}-filePnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /></div></div></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            });
-            container.innerHTML += `
-                <div class="client-card">
+                    `;
+                });
+            }
+
+            const bEntryClass = client.bankEntryDate?.trim() !== '' ? 'has-date' : 'empty-date';
+            const bFileClass = client.bankFilingDate?.trim() !== '' ? 'has-date' : 'empty-date';
+
+            const cardHTML = `
+                <div class="client-card" id="client-row-${client.id}">
                     <div class="client-header">
-                        <input type="text" class="client-title" value="${client.name}" onchange="updateName(${client.id}, this.value)" />
-                        <button class="btn-delete-client" onclick="requestSecureAction('deleteProfile', ${client.id})">Delete Profile</button>
+                        <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" />
+                        <button class="btn-delete-client" onclick="removeEntireClientProfile(${client.id})">Delete Profile</button>
                     </div>
+
                     <div class="work-grid">
                         <div class="work-section">
-                            <h4>Bank Book</h4>
-                            <div class="compact-input-row"><label>Entries:</label><input type="text" value="${client.bankEntryDate}" onchange="handleSync(${client.id}, 'bankEntryDate', this.value)" /></div>
-                            <div class="compact-input-row"><label>Filing:</label><input type="text" value="${client.bankFilingDate}" onchange="handleSync(${client.id}, 'bankFilingDate', this.value)" /></div>
+                            <h4>I. Bank Book</h4>
+                            <div class="compact-input-row">
+                                <label>Entries:</label>
+                                <div class="date-input-container">
+                                    <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
+                                    <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankEntryDate-${client.id}')"><input type="date" id="pkr-bankEntryDate-${client.id}" onchange="handlePickerSync(${client.id}, null, 'bankEntryDate', this.value)" /></div>
+                                </div>
+                            </div>
+                            <div class="compact-input-row" style="margin-top:8px;">
+                                <label>Filing:</label>
+                                <div class="date-input-container">
+                                    <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
+                                    <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankFilingDate-${client.id}')"><input type="date" id="pkr-bankFilingDate-${client.id}" onchange="handlePickerSync(${client.id}, null, 'bankFilingDate', this.value)" /></div>
+                                </div>
+                            </div>
                         </div>
+
                         <div class="work-section">
-                            <h4>Demat Tracker</h4>
+                            <h4 style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>II. Demat Tracker</span>
+                                <button style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer;" onclick="addDematAccount(${client.id})">+ Add Demat</button>
+                            </h4>
                             <div class="demat-wrapper">${dematsHTML}</div>
                         </div>
                     </div>
+
                     <div class="notes-section">
-                        <label>Remarks:</label>
-                        <input type="text" value="${client.internalNotes}" oninput="handleRemarks(${client.id}, this.value)" />
+                        <input type="text" class="notes-input" data-client-id="${client.id}" value="${client.internalNotes || ''}" placeholder="Write notes here..." />
                     </div>
                 </div>
             `;
+            container.innerHTML += cardHTML;
         });
     }
-
-    // Sync helpers
-    function handleRemarks(cid, val) { 
-        const c = masterData.find(x => x.id == cid); 
-        c.internalNotes = val; 
-        saveState(); 
-    }
-    function handleDematSync(cid, did, key, val) { 
-        const c = masterData.find(x => x.id == cid); 
-        const d = c.demats.find(y => y.id == did); 
-        d[key] = val; 
-        saveState(); 
-    }
-    function handleSync(cid, key, val) { 
-        masterData.find(x => x.id == cid)[key] = val; 
-        saveState(); 
-    }
-    // ... Add other helper functions like render, download, etc.
 </script>
+
 </body>
 </html>
