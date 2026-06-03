@@ -211,6 +211,9 @@
         .notes-section span { font-size: 0.88rem; font-weight: 700; color: #475569; }
         .notes-section input[type="text"] { flex: 1; min-width: 200px; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; }
 
+        /* NESTED PAGE-VIEW INVISIBILITY GUARD */
+        #print-mount { display: none !important; }
+
         /* FIXED FAB HOVER CSS */
         .admin-floating-hub {
             position: fixed; 
@@ -233,7 +236,7 @@
 
         .floating-menu-options-list {
             position: absolute;
-            bottom: 70px; /* Pushes the menu directly above the gear */
+            bottom: 70px; 
             right: 0;
             display: flex; flex-direction: column; align-items: flex-end; gap: 8px; 
             opacity: 0;
@@ -242,7 +245,6 @@
             transition: all 0.2s ease; z-index: 1;
         }
 
-        /* Trigger hover ONLY when hitting the gear or the active menu */
         .admin-floating-hub:hover .floating-menu-options-list { 
             opacity: 1; 
             visibility: visible; 
@@ -284,12 +286,63 @@
             .admin-floating-hub { bottom: 20px; right: 20px; }
         }
 
+        /* PRINT ENGINE OVERHAUL & FORMAT DESIGN */
         @media print {
-            body { background: white; color: black; }
-            .container, .notes-section, #login-overlay, .admin-floating-hub, header, .dashboard-custom-modal { display: none !important; }
-            #print-mount { display: block !important; width: 100%; }
-            .print-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
-            .print-table th, .print-table td { border: 1px solid #000; padding: 4px; }
+            @page {
+                size: A4 portrait;
+                margin: 12mm 10mm 12mm 10mm;
+            }
+            body { 
+                background: #ffffff !important; 
+                color: #000000 !important; 
+                font-size: 11px;
+            }
+            .container, .notes-section, #login-overlay, .admin-floating-hub, header, .dashboard-custom-modal { 
+                display: none !important; 
+            }
+            #print-mount { 
+                display: block !important; 
+                width: 100% !important; 
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            .print-table { 
+                width: 100% !important; 
+                border-collapse: collapse !important; 
+                margin-top: 10px;
+                table-layout: fixed;
+            }
+            .print-table th, .print-table td { 
+                border: 1px solid #64748b !important; 
+                padding: 7px 6px !important; 
+                vertical-align: top !important;
+                word-wrap: break-word;
+            }
+            .print-table th {
+                background: #f1f5f9 !important;
+                color: #0f172a !important;
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 10px;
+            }
+            .print-table tr { 
+                page-break-inside: avoid !important; 
+            }
+            .print-table td ul {
+                list-style-type: none !important;
+                padding-left: 0 !important;
+                margin: 0 !important;
+            }
+            .print-table td li {
+                margin-bottom: 6px;
+                padding-bottom: 6px;
+                border-bottom: 1px dashed #cbd5e1;
+            }
+            .print-table td li:last-child {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
         }
     </style>
 </head>
@@ -389,16 +442,14 @@
     let isUserTyping = false;
     let pendingSecureAction = null; 
 
-    // --- ESCAPE KEY LISTENER (UPDATED) ---
+    // --- ESCAPE KEY LISTENER ---
     document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
-            // 1. Close any active modal popups
             const activeModals = document.querySelectorAll('.dashboard-custom-modal.is-active');
             activeModals.forEach(modal => {
                 modal.classList.remove('is-active');
             });
             
-            // 2. Drop focus from input fields (triggers onchange & clears bad data)
             if (document.activeElement && document.activeElement.tagName === 'INPUT') {
                 document.activeElement.blur();
             }
@@ -539,9 +590,7 @@
 
     function updateGlobalMonth(val) { globalReportingMonth = val; saveState(); }
 
-    // --- STRICT DATE PARSING (UPDATED) ---
     function parseSmartAccountingDate(inputValue) {
-        // Strip out anything that isn't a number, space, or slash
         let input = inputValue.trim().replace(/[^0-9\s\/]/g, '');
         if (!input) return '';
         
@@ -552,7 +601,6 @@
         let currentMonth = String(today.getMonth() + 1).padStart(2, '0'); 
         let currentYear = String(today.getFullYear());
 
-        // Smart Parsing
         if (parts.length === 1 && parts[0].length >= 8) {
             let cleanDigits = parts[0].substring(0, 8);
             day = cleanDigits.substring(0, 2);
@@ -573,23 +621,19 @@
             return '';
         }
 
-        // Strict Validation Check
         let d = parseInt(day);
         let m = parseInt(month);
         let y = parseInt(year);
 
-        // WIPE FIELD: If month is > 12, day is > 31, or numbers are invalid
         if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > 2100) {
             return ''; 
         }
 
-        // WIPE FIELD: Check for edge cases like February 30th
         let testDate = new Date(y, m - 1, d);
         if (testDate.getFullYear() !== y || testDate.getMonth() !== (m - 1) || testDate.getDate() !== d) {
             return ''; 
         }
 
-        // Return perfectly formatted date
         return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
     }
 
@@ -681,18 +725,20 @@
         const mount = document.getElementById('print-mount');
         let rowsHTML = '';
         masterData.forEach(c => {
-            let bankCol = `Entries: ${c.bankEntryDate || '❌'}<br>Filing: ${c.bankFilingDate || '❌'}`;
-            let dematCol = '<ul style="padding-left:10px; margin:0;">';
+            let bankCol = `<strong>Entries:</strong> ${c.bankEntryDate || '❌'}<br><strong>Filing:</strong> ${c.bankFilingDate || '❌'}`;
+            let dematCol = '<ul>';
             if(!c.demats || c.demats.length === 0) dematCol += '<li>None</li>';
             else {
                 c.demats.forEach(d => {
-                    dematCol += `<li><strong>${d.name}</strong><br>Ent &rarr; Ledger:${d.entryLedger || '—'}|Contract Notes:${d.entryContract || '—'}|P&L:${d.entryPnl || '—'}<br>Fil &rarr; Ledger:${d.fileLedger || '—'}|Contract Notes:${d.fileContract || '—'}|P&L:${d.filePnl || '—'}</li>`;
+                    dematCol += `<li><strong>${d.name}</strong><br>
+                    <span style="color:#475569;">Entries:</span> L:${d.entryLedger || '—'} | C:${d.entryContract || '—'} | P:${d.entryPnl || '—'}<br>
+                    <span style="color:#475569;">Filing:</span> L:${d.fileLedger || '—'} | C:${d.fileContract || '—'} | P:${d.filePnl || '—'}</li>`;
                 });
             }
             dematCol += '</ul>';
-            rowsHTML += `<tr><td><strong>${c.name}</strong></td><td>${bankCol}</td><td>${dematCol}</td><td>${c.internalNotes || '-'}</td></tr>`;
+            rowsHTML += `<tr><td style="width:22%; font-weight:700;">${c.name}</td><td style="width:18%;">${bankCol}</td><td style="width:40%;">${dematCol}</td><td style="width:20%;">${c.internalNotes || '-'}</td></tr>`;
         });
-        mount.innerHTML = `<h2 style="text-align:center; margin-bottom:10px;">Master Monthly Progress Sheet (${globalReportingMonth})</h2><table class="print-table"><thead><tr><th>Client Name</th><th>Bank Account</th><th>Demat Accounts Summary</th><th>Remarks</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
+        mount.innerHTML = `<h2 style="text-align:center; font-size:16px; font-weight:800; margin-bottom:12px; color:#0f172a;">Master Monthly Progress Sheet (${globalReportingMonth})</h2><table class="print-table"><thead><tr><th style="width:22%;">Client Name</th><th style="width:18%;">Bank Account</th><th style="width:40%;">Demat Accounts Summary</th><th style="width:20%;">Remarks</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
         window.print();
     }
 
