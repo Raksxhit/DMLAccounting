@@ -261,10 +261,15 @@
             width: 170px; text-align: center; border-radius: 25px; font-size: 0.88rem;
             font-weight: 600; cursor: pointer; display: flex; align-items: center;
             justify-content: center; gap: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            transition: all 0.2s ease-in-out;
         }
 
         .action-sub-btn:hover { background: #0f172a; color: white; border-color: #0f172a; }
+        
+        /* Updated visibility and hover parameters for Add Client */
+        .action-sub-btn.btn-primary-action { background: #0f172a; color: white; border-color: #0f172a; }
         .action-sub-btn.btn-primary-action:hover { background: var(--primary); border-color: var(--primary); }
+        
         .action-sub-btn.btn-danger-action:hover { background: var(--danger); border-color: var(--danger); }
 
         /* RESPONSIVE BREAKPOINTS */
@@ -731,8 +736,8 @@
             else {
                 c.demats.forEach(d => {
                     dematCol += `<li><strong>${d.name}</strong><br>
-                    <span style="color:#475569;">Entries:</span> Ledger:${d.entryLedger || '—'} | CN:${d.entryContract || '—'} | P&L:${d.entryPnl || '—'}<br>
-                    <span style="color:#475569;">Filing:</span> Ledger:${d.fileLedger || '—'} | CN:${d.fileContract || '—'} | P&L:${d.filePnl || '—'}</li>`;
+                    <span style="color:#475569;">Entries:</span> L:${d.entryLedger || '—'} | C:${d.entryContract || '—'} | P:${d.entryPnl || '—'}<br>
+                    <span style="color:#475569;">Filing:</span> L:${d.fileLedger || '—'} | C:${d.fileContract || '—'} | P:${d.filePnl || '—'}</li>`;
                 });
             }
             dematCol += '</ul>';
@@ -817,7 +822,7 @@
                         <div class="work-section">
                             <h4 style="display:flex; justify-content:space-between; align-items:center;">
                                 <span>II. Demat Tracker</span>
-                                <button style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer;" onclick="addDematAccount(${client.id})">+ Add Demat</button>
+                                <button style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer; transition: color 0.2s ease-in-out;" onmouseover="this.style.color='var(--primary-hover)'" onmouseout="this.style.color='var(--primary)'" onclick="addDematAccount(${client.id})">+ Add Demat</button>
                             </h4>
                             <div class="demat-wrapper">${dematsHTML}</div>
                         </div>
