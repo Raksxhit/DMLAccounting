@@ -745,7 +745,7 @@
             dematCol += '</ul>';
             rowsHTML += `<tr><td style="width:22%; font-weight:700;">${c.name}</td><td style="width:18%;">${bankCol}</td><td style="width:40%;">${dematCol}</td><td style="width:20%;">${c.internalNotes || '-'}</td></tr>`;
         });
-        mount.innerHTML = `<h2 style="text-align:center; font-size:16px; font-weight:800; margin-bottom:12px; color:#0f172a;">Master Monthly Progress Sheet (${globalReportingMonth})</h2><table class="print-table"><thead><tr><th style="width:22%;">Client Name</th><th style="width:18%;">Bank Account</th><th style="width:40%;">Demat Accounts Summary</th><th style="width:20%;">Remarks</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
+        mount.innerHTML = `<h2 style="text-align:center; font-size:16px; font-weight:800; margin-bottom:12px; color:#0f172a;">Accounting Progress Summary (${globalReportingMonth})</h2><table class="print-table"><thead><tr><th style="width:22%;">Client Name</th><th style="width:18%;">Bank Account</th><th style="width:40%;">Demat Accounts Summary</th><th style="width:20%;">Remarks</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
         window.print();
     }
 
