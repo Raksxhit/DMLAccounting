@@ -169,7 +169,13 @@
         .client-header { background: #f8fafc; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .client-title { font-size: 1.1rem; font-weight: 700; color: #1e293b; border: none; background: transparent; width: 100%; max-width: 450px; outline: none; text-overflow: ellipsis; }
         
-        .btn-delete-client { background: transparent; color: #94a3b8; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+        /* Reorder Controls Styling */
+        .reorder-controls { display: flex; gap: 6px; margin-right: 10px; }
+        .btn-move { background: #e2e8f0; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 14px; color: #475569; transition: background 0.2s; }
+        .btn-move:hover { background: var(--primary); color: white; }
+        .btn-move:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-delete-client { background: transparent; color: #94a3b8; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; white-space: nowrap; margin-left: auto; }
         .btn-delete-client:hover { color: var(--danger); }
 
         .work-grid { display: grid; grid-template-columns: 1fr 3fr; padding: 0; background: #ffffff; }
@@ -265,7 +271,6 @@
 
         .action-sub-btn:hover { background: #0f172a; color: white; border-color: #0f172a; }
         
-        /* Fixed visibility: text changes cleanly to white on dark slate background */
         .action-sub-btn.btn-primary-action:hover { 
             background: #1e293b; 
             color: #ffffff; 
@@ -427,6 +432,7 @@
         </div>
         <div class="floating-menu-options-list">
             <button class="action-sub-btn btn-primary-action" onclick="openCustomModalWindow('add-client-modal-overlay', 'modal-client-name-field')">➕ Add Client</button>
+            <button class="action-sub-btn" id="fab-reorder-btn" onclick="toggleReorderMode()">↕️ Reorder Clients</button>
             <button class="action-sub-btn" onclick="printMasterSummaryPage()">🖨️ Print Summary</button>
             <button class="action-sub-btn btn-danger-action" onclick="openCustomModalWindow('reset-data-modal-overlay', 'modal-reset-passkey-field')">🧹 Reset Data</button>
         </div>
@@ -448,6 +454,7 @@
     let masterData = [];
     let isUserTyping = false;
     let pendingSecureAction = null; 
+    let isReorderMode = false; // New Global State for reordering
 
     // --- ESCAPE KEY LISTENER ---
     document.addEventListener('keydown', function(event) {
@@ -568,6 +575,31 @@
         }
     }
 
+    // --- REORDER LOGIC ---
+    function toggleReorderMode() {
+        isReorderMode = !isReorderMode;
+        const fabBtn = document.getElementById('fab-reorder-btn');
+        if (isReorderMode) {
+            fabBtn.innerHTML = '✅ Finish Reordering';
+            fabBtn.classList.add('btn-primary-action');
+        } else {
+            fabBtn.innerHTML = '↕️ Reorder Clients';
+            fabBtn.classList.remove('btn-primary-action');
+        }
+        renderDashboardHTML();
+    }
+
+    function moveClientOrder(index, direction) {
+        const newIndex = index + direction;
+        if (newIndex >= 0 && newIndex < masterData.length) {
+            const temp = masterData[index];
+            masterData[index] = masterData[newIndex];
+            masterData[newIndex] = temp;
+            saveState();
+            renderDashboardHTML();
+        }
+    }
+
     function downloadLatestCloudData() {
         database.ref('tracker_state').on('value', (snapshot) => {
             const cloudData = snapshot.val();
@@ -666,13 +698,17 @@
 
     function updateDematName(clientId, dematId, value) {
         const client = masterData.find(c => c.id === clientId);
-        const d = client?.demats.find(dm => dm.id === dematId);
+        const d = client?.demats?.find(dm => dm.id === dematId);
         if (d) { d.name = value; saveState(); }
     }
 
     function addDematAccount(clientId) {
         const client = masterData.find(c => c.id === clientId);
         if(client) {
+            // SAFEGUARD: Ensure array exists before pushing
+            if (!client.demats) {
+                client.demats = [];
+            }
             client.demats.push({
                 id: Date.now(), name: 'New Broker A/c', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: ''
             });
@@ -690,6 +726,8 @@
         requestSecureAuth("Confirm Removing Broker Account", () => {
             const client = masterData.find(c => c.id === clientId);
             if(client) {
+                // SAFEGUARD: Ensure array is filtered cleanly
+                if (!client.demats) client.demats = [];
                 client.demats = client.demats.filter(d => d.id !== dematId);
                 renderDashboardHTML(); saveState();
             }
@@ -700,7 +738,7 @@
         let parsedValue = parseSmartAccountingDate(rawValue);
         if (isDemat) {
             const client = masterData.find(c => c.id === clientId);
-            const d = client?.demats.find(dm => dm.id === dematId);
+            const d = client?.demats?.find(dm => dm.id === dematId);
             if (d) d[key] = parsedValue;
         } else {
             const client = masterData.find(c => c.id === clientId);
@@ -717,7 +755,7 @@
         const formattedStr = `${dd}/${mm}/${yyyy}`;
         if (isDemat) {
             const client = masterData.find(c => c.id === clientId);
-            const d = client?.demats.find(dm => dm.id === dematId);
+            const d = client?.demats?.find(dm => dm.id === dematId);
             if (d) d[key] = formattedStr;
         } else {
             const client = masterData.find(c => c.id === clientId);
@@ -752,7 +790,7 @@
     function renderDashboardHTML() {
         const container = document.getElementById('client-container');
         container.innerHTML = '';
-        masterData.forEach(client => {
+        masterData.forEach((client, index) => {
             let dematsHTML = '';
             if(client.demats) {
                 client.demats.forEach(d => {
@@ -795,9 +833,18 @@
             const bEntryClass = client.bankEntryDate?.trim() !== '' ? 'has-date' : 'empty-date';
             const bFileClass = client.bankFilingDate?.trim() !== '' ? 'has-date' : 'empty-date';
             
+            // Build Reorder UI if mode is active
+            const reorderHTML = isReorderMode ? `
+                <div class="reorder-controls">
+                    <button class="btn-move" onclick="moveClientOrder(${index}, -1)" ${index === 0 ? 'disabled' : ''}>▲</button>
+                    <button class="btn-move" onclick="moveClientOrder(${index}, 1)" ${index === masterData.length - 1 ? 'disabled' : ''}>▼</button>
+                </div>
+            ` : '';
+            
             const cardHTML = `
                 <div class="client-card" id="client-row-${client.id}">
                     <div class="client-header">
+                        ${reorderHTML}
                         <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" />
                         <button class="btn-delete-client" onclick="removeEntireClientProfile(${client.id})">Delete Profile</button>
                     </div>
