@@ -147,7 +147,6 @@
         }
         .btn-logout-portal:hover { background-color: #7f1d1d; color: #fca5a5; border-color: #b91c1c; }
 
-        /* Top Controls Bar */
         .top-controls-bar {
             display: flex; gap: 10px; justify-content: flex-end; align-items: center;
             max-width: 1550px; margin: calc(var(--nav-height) + 20px) auto 0; padding: 0 15px;
@@ -162,18 +161,32 @@
         .client-list { display: flex; flex-direction: column; gap: 16px; margin-top: 15px; padding-bottom: 120px; }
 
         .client-card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; overflow: hidden; }
-        .client-header { background: #f8fafc; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
-        .client-title-group { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .toggle-collapse-btn {
-            background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            width: 24px; height: 24px; border-radius: 4px; color: var(--text-light); transition: background 0.2s;
+        .client-header { 
+            background: #f8fafc; padding: 6px 16px; border-bottom: 1px solid #e2e8f0; 
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; 
         }
-        .toggle-collapse-btn:hover { background: #e2e8f0; }
+        
+        /* NEW STYLES: Makes the entire title group area clickable */
+        .client-title-group { 
+            display: flex; align-items: center; gap: 10px; flex: 1; 
+            cursor: pointer; padding: 6px 8px; margin-left: -8px; border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        .client-title-group:hover { background-color: #e2e8f0; }
+
+        .toggle-collapse-btn {
+            background: none; border: none; display: flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border-radius: 4px; color: var(--text-light); transition: background 0.2s;
+            pointer-events: none; /* Let the parent group handle the clicks */
+        }
         .toggle-collapse-btn svg { width: 16px; height: 16px; transition: transform 0.2s; }
         .is-collapsed .toggle-collapse-btn svg { transform: rotate(-90deg); }
 
-        .client-title { font-size: 1.1rem; font-weight: 700; color: #1e293b; border: none; background: transparent; width: 100%; max-width: 400px; outline: none; text-overflow: ellipsis; }
+        .client-title { 
+            font-size: 1.1rem; font-weight: 700; color: #1e293b; border: none; background: transparent; 
+            width: 100%; max-width: 400px; outline: none; text-overflow: ellipsis; cursor: text;
+        }
         .btn-delete-client { background: transparent; color: #94a3b8; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; white-space: nowrap; margin-left: auto; }
         .btn-delete-client:hover { color: var(--danger); }
 
@@ -415,9 +428,7 @@
     let masterData = [];
     let isUserTyping = false;
     let pendingSecureAction = null; 
-    let currentAppPasskey = "031097"; // Default fallback
-    
-    // NEW: Store collapsed state locally so it persists across immediate cloud re-renders
+    let currentAppPasskey = "031097";
     let collapsedClients = new Set();
 
     document.addEventListener('keydown', function(event) {
@@ -439,7 +450,6 @@
             document.getElementById('main-app-layout').style.display = 'block';
             downloadLatestCloudData();
         } else {
-            // Even if logged out, we should pull the passkey so the gatekeeper works
             database.ref('tracker_state').once('value').then(snapshot => {
                 const cloudData = snapshot.val();
                 if (cloudData && cloudData.passkey) currentAppPasskey = cloudData.passkey;
@@ -508,7 +518,6 @@
         }
     }
 
-    // NEW: Handle Password Change
     function confirmChangePassword() {
         const currInput = document.getElementById('current-pass-input').value;
         const newPass = document.getElementById('new-pass-input').value;
@@ -539,13 +548,9 @@
             demats: [{ id: uniqueId + 1, name: 'Zerodha A/c 1', remarks: '', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }]
         });
         
-        // Ensure new client expands automatically
         collapsedClients.delete(uniqueId);
-        
-        renderDashboardHTML();
-        saveState();
-        inputField.value = '';
-        closeCustomModalWindow('add-client-modal-overlay');
+        renderDashboardHTML(); saveState();
+        inputField.value = ''; closeCustomModalWindow('add-client-modal-overlay');
     }
 
     function confirmResetDataModalAction() {
@@ -561,32 +566,23 @@
                     });
                 }
             });
-            renderDashboardHTML();
-            saveState();
-            passkeyField.value = '';
-            closeCustomModalWindow('reset-data-modal-overlay');
+            renderDashboardHTML(); saveState(); passkeyField.value = ''; closeCustomModalWindow('reset-data-modal-overlay');
         } else {
             triggerErrorVibration('modal-reset-passkey-field');
         }
     }
 
-    // DRAG AND DROP REORDER
     let draggedItem = null;
     function openReorderModal() {
         const listContainer = document.getElementById('reorder-client-list');
         listContainer.innerHTML = '';
         masterData.forEach(client => {
             const li = document.createElement('li');
-            li.className = 'draggable-client-item';
-            li.draggable = true;
-            li.dataset.id = client.id;
+            li.className = 'draggable-client-item'; li.draggable = true; li.dataset.id = client.id;
             li.innerHTML = `<span class="drag-handle">☰</span> ${client.name}`;
-            li.addEventListener('dragstart', handleDragStart);
-            li.addEventListener('dragover', handleDragOver);
-            li.addEventListener('drop', handleDrop);
-            li.addEventListener('dragenter', handleDragEnter);
-            li.addEventListener('dragleave', handleDragLeave);
-            li.addEventListener('dragend', handleDragEnd);
+            li.addEventListener('dragstart', handleDragStart); li.addEventListener('dragover', handleDragOver);
+            li.addEventListener('drop', handleDrop); li.addEventListener('dragenter', handleDragEnter);
+            li.addEventListener('dragleave', handleDragLeave); li.addEventListener('dragend', handleDragEnd);
             listContainer.appendChild(li);
         });
         openCustomModalWindow('reorder-clients-modal-overlay');
@@ -620,15 +616,9 @@
     function saveState() {
         const badge = document.getElementById('cloud-status-badge');
         const text = document.getElementById('cloud-status-text');
-        badge.classList.add('is-syncing');
-        text.innerText = "Syncing...";
-        database.ref('tracker_state').set({
-            masterData: masterData, 
-            globalReportingMonth: globalReportingMonth,
-            passkey: currentAppPasskey
-        }).then(() => {
-            setTimeout(() => { badge.classList.remove('is-syncing'); text.innerText = "Synced"; }, 200);
-        });
+        badge.classList.add('is-syncing'); text.innerText = "Syncing...";
+        database.ref('tracker_state').set({ masterData: masterData, globalReportingMonth: globalReportingMonth, passkey: currentAppPasskey })
+        .then(() => { setTimeout(() => { badge.classList.remove('is-syncing'); text.innerText = "Synced"; }, 200); });
     }
 
     function updateGlobalMonth(val) { globalReportingMonth = val; saveState(); }
@@ -639,8 +629,7 @@
         let parts = input.split(/[\s\/]+/).filter(p => p.length > 0);
         let day = '', month = '', year = '';
         let today = new Date();
-        let currentMonth = String(today.getMonth() + 1).padStart(2, '0'); 
-        let currentYear = String(today.getFullYear());
+        let currentMonth = String(today.getMonth() + 1).padStart(2, '0'); let currentYear = String(today.getFullYear());
 
         if (parts.length === 1 && parts[0].length >= 8) { let clean = parts[0].substring(0, 8); day = clean.substring(0, 2); month = clean.substring(2, 4); year = clean.substring(4, 8); }
         else if (parts.length === 1) { day = parts[0].substring(0, 2).padStart(2, '0'); month = currentMonth; year = currentYear; }
@@ -655,128 +644,78 @@
         return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
     }
 
-    // NEW: Client Card Toggle Actions
     function toggleClientCollapse(clientId) {
         const card = document.getElementById(`client-row-${clientId}`);
-        if (collapsedClients.has(clientId)) {
-            collapsedClients.delete(clientId);
-            card.classList.remove('is-collapsed');
-        } else {
-            collapsedClients.add(clientId);
-            card.classList.add('is-collapsed');
-        }
+        if (collapsedClients.has(clientId)) { collapsedClients.delete(clientId); card.classList.remove('is-collapsed'); } 
+        else { collapsedClients.add(clientId); card.classList.add('is-collapsed'); }
     }
 
     function setAllClientsExpansion(expandAll) {
-        masterData.forEach(client => {
-            if (expandAll) collapsedClients.delete(client.id);
-            else collapsedClients.add(client.id);
-        });
+        masterData.forEach(client => { if (expandAll) collapsedClients.delete(client.id); else collapsedClients.add(client.id); });
         renderDashboardHTML();
     }
 
     function removeEntireClientProfile(clientId) {
-        requestSecureAuth("Confirm Deleting Client Profile", () => {
-            masterData = masterData.filter(c => c.id !== clientId);
-            renderDashboardHTML(); saveState();
-        });
+        requestSecureAuth("Confirm Deleting Client Profile", () => { masterData = masterData.filter(c => c.id !== clientId); renderDashboardHTML(); saveState(); });
     }
 
-    function updateClientCardName(clientId, value) {
-        const target = masterData.find(c => c.id === clientId);
-        if(target) { target.name = value.toUpperCase(); saveState(); }
-    }
+    function updateClientCardName(clientId, value) { const target = masterData.find(c => c.id === clientId); if(target) { target.name = value.toUpperCase(); saveState(); } }
 
     document.addEventListener('change', function(e) {
         if(e.target && e.target.classList.contains('notes-input')) {
-            const cid = e.target.getAttribute('data-client-id');
-            const target = masterData.find(c => c.id == cid);
+            const cid = e.target.getAttribute('data-client-id'); const target = masterData.find(c => c.id == cid);
             if(target) { target.internalNotes = e.target.value; saveState(); }
         }
     });
 
-    function updateDematName(clientId, dematId, value) {
-        const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId);
-        if (d) { d.name = value; saveState(); }
-    }
-
-    // NEW: Function to sync demat remarks
-    function updateDematRemarks(clientId, dematId, value) {
-        const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId);
-        if (d) { d.remarks = value; saveState(); }
-    }
+    function updateDematName(clientId, dematId, value) { const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId); if (d) { d.name = value; saveState(); } }
+    function updateDematRemarks(clientId, dematId, value) { const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId); if (d) { d.remarks = value; saveState(); } }
 
     function addDematAccount(clientId) {
         const client = masterData.find(c => c.id === clientId);
         if(client) {
             if (!client.demats) client.demats = [];
-            client.demats.push({
-                id: Date.now(), name: 'New Broker A/c', remarks: '', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: ''
-            });
+            client.demats.push({ id: Date.now(), name: 'New Broker A/c', remarks: '', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' });
             renderDashboardHTML(); saveState();
         }
     }
 
-    function forceCalendarPickerTrigger(event, elementId) {
-        event.preventDefault(); event.stopPropagation();
-        const targetedInput = document.getElementById(elementId);
-        if (targetedInput && typeof targetedInput.showPicker === 'function') targetedInput.showPicker();
-    }
+    function forceCalendarPickerTrigger(event, elementId) { event.preventDefault(); event.stopPropagation(); const targetedInput = document.getElementById(elementId); if (targetedInput && typeof targetedInput.showPicker === 'function') targetedInput.showPicker(); }
 
     function removeDematAccount(clientId, dematId) {
         requestSecureAuth("Confirm Removing Broker Account", () => {
             const client = masterData.find(c => c.id === clientId);
-            if(client) {
-                if (!client.demats) client.demats = [];
-                client.demats = client.demats.filter(d => d.id !== dematId);
-                renderDashboardHTML(); saveState();
-            }
+            if(client) { if (!client.demats) client.demats = []; client.demats = client.demats.filter(d => d.id !== dematId); renderDashboardHTML(); saveState(); }
         });
     }
 
     function handleInputSync(clientId, dematId, key, rawValue, isDemat = false) {
         let parsedValue = parseSmartAccountingDate(rawValue);
-        if (isDemat) {
-            const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId);
-            if (d) d[key] = parsedValue;
-        } else {
-            const client = masterData.find(c => c.id === clientId);
-            if (client) client[key] = parsedValue;
-        }
+        if (isDemat) { const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId); if (d) d[key] = parsedValue; } 
+        else { const client = masterData.find(c => c.id === clientId); if (client) client[key] = parsedValue; }
         const el = document.getElementById(dematId ? `txt-${clientId}-${dematId}-${key}` : `txt-${key}-${clientId}`);
         if(el) { el.value = parsedValue; el.className = parsedValue !== '' ? 'has-date' : 'empty-date'; }
         saveState();
     }
 
     function handlePickerSync(clientId, dematId, key, dateVal, isDemat = false) {
-        if (!dateVal) return;
-        const [yyyy, mm, dd] = dateVal.split('-');
-        const formattedStr = `${dd}/${mm}/${yyyy}`;
-        if (isDemat) {
-            const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId);
-            if (d) d[key] = formattedStr;
-        } else {
-            const client = masterData.find(c => c.id === clientId);
-            if (client) client[key] = formattedStr;
-        }
+        if (!dateVal) return; const [yyyy, mm, dd] = dateVal.split('-'); const formattedStr = `${dd}/${mm}/${yyyy}`;
+        if (isDemat) { const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId); if (d) d[key] = formattedStr; } 
+        else { const client = masterData.find(c => c.id === clientId); if (client) client[key] = formattedStr; }
         const el = document.getElementById(dematId ? `txt-${clientId}-${dematId}-${key}` : `txt-${key}-${clientId}`);
         if(el) { el.value = formattedStr; el.className = 'has-date'; }
         saveState();
     }
 
     function printMasterSummaryPage() {
-        const mount = document.getElementById('print-mount');
-        let rowsHTML = '';
+        const mount = document.getElementById('print-mount'); let rowsHTML = '';
         masterData.forEach(c => {
             let bankCol = `<strong>Entries:</strong> ${c.bankEntryDate || '❌'}<br><strong>Filing:</strong> ${c.bankFilingDate || '❌'}`;
             let dematCol = '<ul>';
             if(!c.demats || c.demats.length === 0) dematCol += '<li>None</li>';
             else {
                 c.demats.forEach(d => {
-                    dematCol += `<li><strong>${d.name}</strong><br>
-                    <span style="color:#475569;">Entries:</span> Ledger:${d.entryLedger || '—'} | CN:${d.entryContract || '—'} | P&L:${d.entryPnl || '—'}<br>
-                    <span style="color:#475569;">Filing:</span> Ledger:${d.fileLedger || '—'} | CN:${d.fileContract || '—'} | P&L:${d.filePnl || '—'}<br>
-                    <span style="color:#475569;">Remarks:</span> ${d.remarks || '—'}</li>`;
+                    dematCol += `<li><strong>${d.name}</strong><br><span style="color:#475569;">Entries:</span> Ledger:${d.entryLedger || '—'} | CN:${d.entryContract || '—'} | P&L:${d.entryPnl || '—'}<br><span style="color:#475569;">Filing:</span> Ledger:${d.fileLedger || '—'} | CN:${d.fileContract || '—'} | P&L:${d.filePnl || '—'}<br><span style="color:#475569;">Remarks:</span> ${d.remarks || '—'}</li>`;
                 });
             }
             dematCol += '</ul>';
@@ -793,12 +732,8 @@
             let dematsHTML = '';
             if(client.demats) {
                 client.demats.forEach(d => {
-                    const eLClass = d.entryLedger.trim() !== '' ? 'has-date' : 'empty-date';
-                    const eCClass = d.entryContract.trim() !== '' ? 'has-date' : 'empty-date';
-                    const ePClass = d.entryPnl.trim() !== '' ? 'has-date' : 'empty-date';
-                    const fLClass = d.fileLedger.trim() !== '' ? 'has-date' : 'empty-date';
-                    const fCClass = d.fileContract.trim() !== '' ? 'has-date' : 'empty-date';
-                    const fPClass = d.filePnl.trim() !== '' ? 'has-date' : 'empty-date';
+                    const eLClass = d.entryLedger.trim() !== '' ? 'has-date' : 'empty-date'; const eCClass = d.entryContract.trim() !== '' ? 'has-date' : 'empty-date'; const ePClass = d.entryPnl.trim() !== '' ? 'has-date' : 'empty-date';
+                    const fLClass = d.fileLedger.trim() !== '' ? 'has-date' : 'empty-date'; const fCClass = d.fileContract.trim() !== '' ? 'has-date' : 'empty-date'; const fPClass = d.filePnl.trim() !== '' ? 'has-date' : 'empty-date';
 
                     dematsHTML += `
                         <div class="demat-card-item">
@@ -806,7 +741,6 @@
                                 <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
                                 <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove</button>
                             </div>
-                            
                             <div class="demat-row-block">
                                 <div class="sub-block-title">📊 Entries</div>
                                 <div class="demat-fields-horizontal">
@@ -815,7 +749,6 @@
                                     <div class="mini-input-cell"><span>P&L</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-entryPnl" class="${ePClass}" value="${d.entryPnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-entryPnl')"><input type="date" id="pkr-${client.id}-${d.id}-entryPnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'entryPnl', this.value, true)" /></div></div></div>
                                 </div>
                             </div>
-
                             <div class="demat-row-block">
                                 <div class="sub-block-title">📁 Filing</div>
                                 <div class="demat-fields-horizontal">
@@ -824,7 +757,6 @@
                                     <div class="mini-input-cell"><span>P&L</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-filePnl" class="${fPClass}" value="${d.filePnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')"><input type="date" id="pkr-${client.id}-${d.id}-filePnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /></div></div></div>
                                 </div>
                             </div>
-
                             <div class="demat-row-block" style="margin-top: 8px;">
                                 <div class="sub-block-title">📝 Remarks</div>
                                 <input type="text" class="demat-remarks-input" value="${d.remarks || ''}" placeholder="Notes for this demat..." onchange="updateDematRemarks(${client.id}, ${d.id}, this.value)" />
@@ -836,18 +768,16 @@
 
             const bEntryClass = client.bankEntryDate?.trim() !== '' ? 'has-date' : 'empty-date';
             const bFileClass = client.bankFilingDate?.trim() !== '' ? 'has-date' : 'empty-date';
-            
-            // Apply a CSS class if this client is currently in the "collapsed" set
             const collapsedClass = collapsedClients.has(client.id) ? 'is-collapsed' : '';
 
             const cardHTML = `
                 <div class="client-card ${collapsedClass}" id="client-row-${client.id}">
                     <div class="client-header">
-                        <div class="client-title-group">
-                            <button class="toggle-collapse-btn" onclick="toggleClientCollapse(${client.id})">
+                        <div class="client-title-group" onclick="toggleClientCollapse(${client.id})">
+                            <div class="toggle-collapse-btn">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                            </button>
-                            <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" />
+                            </div>
+                            <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" onclick="event.stopPropagation()" />
                         </div>
                         <button class="btn-delete-client" onclick="removeEntireClientProfile(${client.id})">Delete Profile</button>
                     </div>
@@ -871,21 +801,16 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="work-section">
                                 <h4 style="display:flex; justify-content:space-between; align-items:center;">
                                     <span>II. Demat Tracker</span>
-                                    <button style="background:none; border:none; color:var(--text-light); font-weight:bold; cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" 
-                                    onmouseover="this.style.backgroundColor='var(--success)'; this.style.color='#ffffff';" 
-                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-light)';" 
-                                    onclick="addDematAccount(${client.id})">
+                                    <button style="background:none; border:none; color:var(--text-light); font-weight:bold; cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.backgroundColor='var(--success)'; this.style.color='#ffffff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-light)';" onclick="addDematAccount(${client.id})">
                                     + Add Demat
                                     </button>
                                 </h4>
                                 <div class="demat-wrapper">${dematsHTML}</div>
                             </div>
                         </div>
-
                         <div class="notes-section">
                             <span>Client Remarks:</span>
                             <input type="text" class="notes-input" data-client-id="${client.id}" value="${client.internalNotes || ''}" placeholder="Write global notes here..." />
