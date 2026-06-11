@@ -665,9 +665,22 @@
     }
 
     function setAllClientsExpansion(expandAll) {
-        masterData.forEach(client => { if (expandAll) collapsedClients.delete(client.id); else collapsedClients.add(client.id); });
-        renderDashboardHTML();
-    }
+    masterData.forEach(client => { 
+        // 1. Find the specific card currently on the screen
+        const card = document.getElementById(`client-row-${client.id}`);
+        
+        if (expandAll) { 
+            // 2. Update our memory and remove the collapsed class directly
+            collapsedClients.delete(client.id); 
+            if (card) card.classList.remove('is-collapsed');
+        } else { 
+            // 3. Update our memory and add the collapsed class directly
+            collapsedClients.add(client.id); 
+            if (card) card.classList.add('is-collapsed');
+        } 
+    });
+    // We completely removed renderDashboardHTML() so it happens instantly!
+}
 
     function toggleClientCollapse(clientId) {
         const card = document.getElementById(`client-row-${clientId}`);
