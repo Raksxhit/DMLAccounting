@@ -22,21 +22,9 @@
             --nav-height: 70px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 0; line-height: 1.4; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 0;
-            line-height: 1.4;
-        }
-
-        /* Unified 0.7s password error and vibration animation */
         @keyframes vibrateRed {
             0% { transform: translateX(0); border-color: var(--danger); box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
             15% { transform: translateX(-6px); border-color: var(--danger); }
@@ -48,17 +36,11 @@
             100% { transform: translateX(0); border-color: var(--danger); box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
         }
 
-        .shake-error {
-            animation: vibrateRed 0.7s ease-in-out !important;
-            border-color: var(--danger) !important;
-        }
+        .shake-error { animation: vibrateRed 0.7s ease-in-out !important; border-color: var(--danger) !important; }
 
-        /* PORTAL LOCKSCREEN OVERLAY */
         #login-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #0f172a;
-            display: flex; justify-content: center; align-items: center;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #0f172a; display: flex; justify-content: center; align-items: center;
             z-index: 999999; flex-direction: column;
         }
 
@@ -83,7 +65,6 @@
             border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;
         }
 
-        /* CUSTOM METRIC WORKSPACE DIALOG ARCHITECTURE */
         .dashboard-custom-modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);
@@ -112,30 +93,13 @@
         .modal-btn.btn-confirm { background: var(--primary); color: white; border: none; }
         .modal-btn.btn-danger-confirm { background: var(--danger); color: white; border: none; }
 
-        /* DRAG AND DROP UI FOR MODAL */
         #reorder-client-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            overflow-y: auto;
-            flex-grow: 1;
-            /* Thin scrollbar for modal */
-            scrollbar-width: thin;
+            list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; scrollbar-width: thin;
         }
         .draggable-client-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            cursor: grab;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-main);
-            transition: background 0.2s, transform 0.1s;
+            padding: 12px; margin-bottom: 8px; background: #f8fafc; border: 1px solid var(--border-color);
+            border-radius: 6px; cursor: grab; display: flex; align-items: center; gap: 12px;
+            font-size: 0.95rem; font-weight: 600; color: var(--text-main); transition: background 0.2s, transform 0.1s;
         }
         .draggable-client-item:active { cursor: grabbing; }
         .draggable-client-item.dragging { opacity: 0.4; background: #cbd5e1; }
@@ -144,30 +108,20 @@
 
         .container { max-width: 1550px; margin: 0 auto; padding: 0 15px; display: none; }
 
-        /* RESPONSIVE NAVIGATION BAR */
         header {
-            position: fixed; top: 0; left: 0; width: 100%; min-height: var(--nav-height);
-            background-color: #0f172a;
+            position: fixed; top: 0; left: 0; width: 100%; min-height: var(--nav-height); background-color: #0f172a;
             background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 20px 20px; border-bottom: 2px solid #334155;
-            z-index: 9999; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px;
+            background-size: 20px 20px; border-bottom: 2px solid #334155; z-index: 9999;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px;
         }
 
         .header-left-cluster { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; flex: 1; min-width: 250px; }
-        
-        header h1 {
-            font-size: clamp(1rem, 3.5vw, 1.3rem);
-            font-weight: 800; color: #ffffff; letter-spacing: -0.02em;
-            white-space: nowrap; margin-right: 10px;
-        }
+        header h1 { font-size: clamp(1rem, 3.5vw, 1.3rem); font-weight: 800; color: #ffffff; letter-spacing: -0.02em; white-space: nowrap; margin-right: 10px; }
 
         .cloud-badge-animated {
-            display: flex; align-items: center; gap: 6px; background: #1e293b;
-            padding: 5px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 700;
-            color: #94a3b8; border: 1px solid #334155; white-space: nowrap;
+            display: flex; align-items: center; gap: 6px; background: #1e293b; padding: 5px 12px;
+            border-radius: 20px; font-size: 0.72rem; font-weight: 700; color: #94a3b8; border: 1px solid #334155; white-space: nowrap;
         }
-
         .cloud-pulse-dot { width: 7px; height: 7px; background-color: var(--success); border-radius: 50%; position: relative; }
         .cloud-pulse-dot::after {
             content: ''; position: absolute; width: 100%; height: 100%; background-color: var(--success);
@@ -184,8 +138,7 @@
         .nav-month-container { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: #94a3b8; }
         .nav-month-container input {
             padding: 6px 12px; border: 1px solid #334155; border-radius: 6px;
-            font-size: 0.95rem; font-weight: 700; color: #ffffff; width: 135px;
-            background: #1e293b; text-align: center; outline: none;
+            font-size: 0.95rem; font-weight: 700; color: #ffffff; width: 135px; background: #1e293b; text-align: center; outline: none;
         }
 
         .btn-logout-portal {
@@ -194,14 +147,38 @@
         }
         .btn-logout-portal:hover { background-color: #7f1d1d; color: #fca5a5; border-color: #b91c1c; }
 
-        .client-list { display: flex; flex-direction: column; gap: 16px; margin-top: calc(var(--nav-height) + 20px); padding-bottom: 120px; }
+        /* Top Controls Bar */
+        .top-controls-bar {
+            display: flex; gap: 10px; justify-content: flex-end; align-items: center;
+            max-width: 1550px; margin: calc(var(--nav-height) + 20px) auto 0; padding: 0 15px;
+        }
+        .top-controls-bar button {
+            background: white; border: 1px solid var(--border-color); padding: 8px 14px;
+            border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text-main);
+            display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;
+        }
+        .top-controls-bar button:hover { background: #f8fafc; }
+
+        .client-list { display: flex; flex-direction: column; gap: 16px; margin-top: 15px; padding-bottom: 120px; }
 
         .client-card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; overflow: hidden; }
         .client-header { background: #f8fafc; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .client-title { font-size: 1.1rem; font-weight: 700; color: #1e293b; border: none; background: transparent; width: 100%; max-width: 450px; outline: none; text-overflow: ellipsis; }
+        
+        .client-title-group { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .toggle-collapse-btn {
+            background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border-radius: 4px; color: var(--text-light); transition: background 0.2s;
+        }
+        .toggle-collapse-btn:hover { background: #e2e8f0; }
+        .toggle-collapse-btn svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .is-collapsed .toggle-collapse-btn svg { transform: rotate(-90deg); }
 
+        .client-title { font-size: 1.1rem; font-weight: 700; color: #1e293b; border: none; background: transparent; width: 100%; max-width: 400px; outline: none; text-overflow: ellipsis; }
         .btn-delete-client { background: transparent; color: #94a3b8; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; white-space: nowrap; margin-left: auto; }
         .btn-delete-client:hover { color: var(--danger); }
+
+        .client-body { transition: all 0.2s; }
+        .is-collapsed .client-body { display: none; }
 
         .work-grid { display: grid; grid-template-columns: 1fr 3fr; padding: 0; background: #ffffff; }
         .work-section { padding: 12px 16px; border-right: 1px solid #e2e8f0; }
@@ -237,55 +214,31 @@
         .demat-fields-horizontal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
         .demat-fields-horizontal .mini-input-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 100%; }
         .demat-fields-horizontal span { font-size: 0.8rem; color: #334155; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+        
+        .demat-remarks-input {
+            width: 100%; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 4px;
+            font-size: 0.85rem; color: #334155; background: #ffffff;
+        }
 
         .notes-section { padding: 12px 16px; border-top: 1px solid #edf2f7; background: #fafafa; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .notes-section span { font-size: 0.88rem; font-weight: 700; color: #475569; }
         .notes-section input[type="text"] { flex: 1; min-width: 200px; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.92rem; font-weight: 500; }
 
-        /* NESTED PAGE-VIEW INVISIBILITY GUARD */
         #print-mount { display: none !important; }
 
-        /* FIXED FAB HOVER CSS */
-        .admin-floating-hub {
-            position: fixed; 
-            bottom: 30px; 
-            right: 30px; 
-            z-index: 99999;
-            width: 56px; 
-            height: 56px;
-        }
-
+        .admin-floating-hub { position: fixed; bottom: 30px; right: 30px; z-index: 99999; width: 56px; height: 56px; }
         .fab-trigger-gear {
-            width: 100%; 
-            height: 100%; 
-            background-color: #0f172a; 
-            border-radius: 50%;
+            width: 100%; height: 100%; background-color: #0f172a; border-radius: 50%;
             display: flex; justify-content: center; align-items: center; color: white;
-            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); cursor: pointer;
-            transition: all 0.3s ease; position: relative; z-index: 2;
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); cursor: pointer; transition: all 0.3s ease; position: relative; z-index: 2;
         }
-
         .floating-menu-options-list {
-            position: absolute;
-            bottom: 70px; 
-            right: 0;
-            display: flex; flex-direction: column; align-items: flex-end; gap: 8px; 
-            opacity: 0;
-            visibility: hidden; 
-            transform: translateY(10px); 
-            transition: all 0.2s ease; z-index: 1;
+            position: absolute; bottom: 70px; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; 
+            opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.2s ease; z-index: 1;
         }
 
-        .admin-floating-hub:hover .floating-menu-options-list { 
-            opacity: 1; 
-            visibility: visible; 
-            transform: translateY(0); 
-        }
-        
-        .admin-floating-hub:hover .fab-trigger-gear { 
-            background-color: var(--primary); 
-            transform: rotate(45deg); 
-        }
+        .admin-floating-hub:hover .floating-menu-options-list { opacity: 1; visibility: visible; transform: translateY(0); }
+        .admin-floating-hub:hover .fab-trigger-gear { background-color: var(--primary); transform: rotate(45deg); }
 
         .action-sub-btn {
             background: white; color: #334155; border: 1px solid #cbd5e1; padding: 12px 0;
@@ -295,16 +248,9 @@
         }
 
         .action-sub-btn:hover { background: #0f172a; color: white; border-color: #0f172a; }
-        
-        .action-sub-btn.btn-primary-action:hover { 
-            background: #1e293b; 
-            color: #ffffff; 
-            border-color: #1e293b; 
-        }
-        
+        .action-sub-btn.btn-primary-action:hover { background: #1e293b; color: #ffffff; border-color: #1e293b; }
         .action-sub-btn.btn-danger-action:hover { background: var(--danger); border-color: var(--danger); }
 
-        /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 1024px) {
             .work-grid { grid-template-columns: 1fr; }
             .work-section { border-right: none; border-bottom: 1px solid #e2e8f0; }
@@ -315,7 +261,7 @@
             header { padding: 12px 20px; height: auto; justify-content: center; gap: 10px; }
             .header-left-cluster { width: 100%; justify-content: center; text-align: center; }
             .header-right-cluster { width: 100%; justify-content: space-between; gap: 10px; }
-            .client-list { margin-top: 130px; }
+            .top-controls-bar { margin-top: 130px; justify-content: space-between; }
             .demat-row-block { grid-template-columns: 1fr; gap: 4px; }
             .demat-fields-horizontal { grid-template-columns: 1fr; gap: 10px; }
             .demat-fields-horizontal .mini-input-cell { flex-direction: row; justify-content: space-between; align-items: center; }
@@ -323,63 +269,18 @@
             .admin-floating-hub { bottom: 20px; right: 20px; }
         }
 
-        /* PRINT ENGINE OVERHAUL & FORMAT DESIGN */
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 12mm 10mm 12mm 10mm;
-            }
-            body { 
-                background: #ffffff !important; 
-                color: #000000 !important; 
-                font-size: 11px;
-            }
-            .container, .notes-section, #login-overlay, .admin-floating-hub, header, .dashboard-custom-modal { 
-                display: none !important; 
-            }
-            #print-mount { 
-                display: block !important; 
-                width: 100% !important; 
-                opacity: 1 !important;
-                visibility: visible !important;
-            }
-            .print-table { 
-                width: 100% !important; 
-                border-collapse: collapse !important; 
-                margin-top: 10px;
-                table-layout: fixed;
-            }
-            .print-table th, .print-table td { 
-                border: 1px solid #64748b !important; 
-                padding: 7px 6px !important; 
-                vertical-align: top !important;
-                word-wrap: break-word;
-            }
-            .print-table th {
-                background: #f1f5f9 !important;
-                color: #0f172a !important;
-                font-weight: 700;
-                text-transform: uppercase;
-                font-size: 10px;
-            }
-            .print-table tr { 
-                page-break-inside: avoid !important; 
-            }
-            .print-table td ul {
-                list-style-type: none !important;
-                padding-left: 0 !important;
-                margin: 0 !important;
-            }
-            .print-table td li {
-                margin-bottom: 6px;
-                padding-bottom: 6px;
-                border-bottom: 1px dashed #cbd5e1;
-            }
-            .print-table td li:last-child {
-                margin-bottom: 0;
-                padding-bottom: 0;
-                border-bottom: none;
-            }
+            @page { size: A4 portrait; margin: 12mm 10mm 12mm 10mm; }
+            body { background: #ffffff !important; color: #000000 !important; font-size: 11px; }
+            .container, .notes-section, #login-overlay, .admin-floating-hub, header, .dashboard-custom-modal, .top-controls-bar { display: none !important; }
+            #print-mount { display: block !important; width: 100% !important; opacity: 1 !important; visibility: visible !important; }
+            .print-table { width: 100% !important; border-collapse: collapse !important; margin-top: 10px; table-layout: fixed; }
+            .print-table th, .print-table td { border: 1px solid #64748b !important; padding: 7px 6px !important; vertical-align: top !important; word-wrap: break-word; }
+            .print-table th { background: #f1f5f9 !important; color: #0f172a !important; font-weight: 700; text-transform: uppercase; font-size: 10px; }
+            .print-table tr { page-break-inside: avoid !important; }
+            .print-table td ul { list-style-type: none !important; padding-left: 0 !important; margin: 0 !important; }
+            .print-table td li { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #cbd5e1; }
+            .print-table td li:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
         }
     </style>
 </head>
@@ -425,13 +326,23 @@
     <div class="modal-content-box" style="max-width: 480px;">
         <h3>Reorder Clients</h3>
         <p>Click, hold, and drag the handles to rearrange your list.</p>
-        
-        <ul id="reorder-client-list">
-            </ul>
-        
+        <ul id="reorder-client-list"></ul>
         <div class="modal-action-row">
             <button class="modal-btn" onclick="closeCustomModalWindow('reorder-clients-modal-overlay')">Cancel</button>
             <button class="modal-btn btn-confirm" onclick="saveReorderedClients()">Save Order</button>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-custom-modal" id="change-pass-modal-overlay">
+    <div class="modal-content-box">
+        <h3>Change App Passcode</h3>
+        <p>Enter current and new access passcode (min 4 chars):</p>
+        <input type="password" id="current-pass-input" placeholder="Current Passcode" maxlength="10" />
+        <input type="password" id="new-pass-input" placeholder="New Passcode" maxlength="10" />
+        <div class="modal-action-row">
+            <button class="modal-btn" onclick="closeCustomModalWindow('change-pass-modal-overlay')">Cancel</button>
+            <button class="modal-btn btn-confirm" onclick="confirmChangePassword()">Save Password</button>
         </div>
     </div>
 </div>
@@ -440,7 +351,7 @@
     <div class="login-box" id="login-modal-box">
         <h2>Security Authentication</h2>
         <p>Please type your access code to run dashboard entries</p>
-        <input type="password" id="app-passkey-input" placeholder="••••••" maxlength="6" autofocus />
+        <input type="password" id="app-passkey-input" placeholder="••••••" maxlength="10" autofocus />
         <button onclick="verifyAppMasterGateAccess()">Unlock System</button>
     </div>
 </div>
@@ -466,6 +377,15 @@
         </div>
     </header>
 
+    <div class="top-controls-bar">
+        <button onclick="setAllClientsExpansion(true)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg> Expand All
+        </button>
+        <button onclick="setAllClientsExpansion(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg> Collapse All
+        </button>
+    </div>
+
     <div class="admin-floating-hub">
         <div class="fab-trigger-gear">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2v.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -474,6 +394,7 @@
             <button class="action-sub-btn btn-primary-action" onclick="openCustomModalWindow('add-client-modal-overlay', 'modal-client-name-field')">➕ Add Client</button>
             <button class="action-sub-btn" onclick="openReorderModal()">↕️ Reorder Clients</button>
             <button class="action-sub-btn" onclick="printMasterSummaryPage()">🖨️ Print Summary</button>
+            <button class="action-sub-btn" onclick="openCustomModalWindow('change-pass-modal-overlay', 'current-pass-input')">🔑 Change Passcode</button>
             <button class="action-sub-btn btn-danger-action" onclick="openCustomModalWindow('reset-data-modal-overlay', 'modal-reset-passkey-field')">🧹 Reset Data</button>
         </div>
     </div>
@@ -494,15 +415,15 @@
     let masterData = [];
     let isUserTyping = false;
     let pendingSecureAction = null; 
+    let currentAppPasskey = "031097"; // Default fallback
+    
+    // NEW: Store collapsed state locally so it persists across immediate cloud re-renders
+    let collapsedClients = new Set();
 
-    // --- ESCAPE KEY LISTENER ---
     document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
             const activeModals = document.querySelectorAll('.dashboard-custom-modal.is-active');
-            activeModals.forEach(modal => {
-                modal.classList.remove('is-active');
-            });
-            
+            activeModals.forEach(modal => modal.classList.remove('is-active'));
             if (document.activeElement && document.activeElement.tagName === 'INPUT') {
                 document.activeElement.blur();
             }
@@ -517,6 +438,12 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-app-layout').style.display = 'block';
             downloadLatestCloudData();
+        } else {
+            // Even if logged out, we should pull the passkey so the gatekeeper works
+            database.ref('tracker_state').once('value').then(snapshot => {
+                const cloudData = snapshot.val();
+                if (cloudData && cloudData.passkey) currentAppPasskey = cloudData.passkey;
+            });
         }
     });
 
@@ -529,12 +456,12 @@
     }
 
     document.getElementById('app-passkey-input').addEventListener('input', function(e) {
-        if(e.target.value === "031097") verifyAppMasterGateAccess(true);
+        if(e.target.value === currentAppPasskey) verifyAppMasterGateAccess(true);
     });
 
     function verifyAppMasterGateAccess(isAuto = false) {
         const passwordInputVal = document.getElementById('app-passkey-input').value;
-        if(passwordInputVal === "031097") {
+        if(passwordInputVal === currentAppPasskey) {
             sessionStorage.setItem('dml_authorized_session', 'true'); 
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-app-layout').style.display = 'block';
@@ -558,6 +485,10 @@
 
     function closeCustomModalWindow(overlayId) {
         document.getElementById(overlayId).classList.remove('is-active');
+        if (overlayId === 'change-pass-modal-overlay') {
+            document.getElementById('current-pass-input').value = '';
+            document.getElementById('new-pass-input').value = '';
+        }
     }
 
     function requestSecureAuth(title, callback) {
@@ -569,12 +500,32 @@
 
     function confirmSecureAuthAction() {
         const inputVal = document.getElementById('secure-auth-input').value;
-        if (inputVal === "031097") {
+        if (inputVal === currentAppPasskey) {
             closeCustomModalWindow('secure-auth-modal-overlay');
             if (pendingSecureAction) pendingSecureAction();
         } else {
             triggerErrorVibration('secure-auth-input');
         }
+    }
+
+    // NEW: Handle Password Change
+    function confirmChangePassword() {
+        const currInput = document.getElementById('current-pass-input').value;
+        const newPass = document.getElementById('new-pass-input').value;
+
+        if (currInput !== currentAppPasskey) {
+            triggerErrorVibration('current-pass-input');
+            return;
+        }
+        if (newPass.length < 4) {
+            triggerErrorVibration('new-pass-input');
+            return;
+        }
+
+        currentAppPasskey = newPass;
+        saveState();
+        closeCustomModalWindow('change-pass-modal-overlay');
+        alert("Passcode updated successfully!");
     }
 
     function confirmAddClientModalAction() {
@@ -585,8 +536,12 @@
         const uniqueId = Date.now();
         masterData.push({
             id: uniqueId, name: candidateName, bankEntryDate: '', bankFilingDate: '', internalNotes: '',
-            demats: [{ id: uniqueId + 1, name: 'Zerodha A/c 1', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }]
+            demats: [{ id: uniqueId + 1, name: 'Zerodha A/c 1', remarks: '', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: '' }]
         });
+        
+        // Ensure new client expands automatically
+        collapsedClients.delete(uniqueId);
+        
         renderDashboardHTML();
         saveState();
         inputField.value = '';
@@ -595,13 +550,14 @@
 
     function confirmResetDataModalAction() {
         const passkeyField = document.getElementById('modal-reset-passkey-field');
-        if (passkeyField.value === "031097") {
+        if (passkeyField.value === currentAppPasskey) {
             masterData.forEach(client => {
                 client.bankEntryDate = ''; client.bankFilingDate = ''; client.internalNotes = '';
                 if(client.demats) {
                     client.demats.forEach(d => {
                         d.entryLedger = ''; d.entryContract = ''; d.entryPnl = '';
                         d.fileLedger = ''; d.fileContract = ''; d.filePnl = '';
+                        d.remarks = '';
                     });
                 }
             });
@@ -614,106 +570,47 @@
         }
     }
 
-    // --- NEW: DRAG AND DROP REORDER LOGIC ---
+    // DRAG AND DROP REORDER
     let draggedItem = null;
-
     function openReorderModal() {
         const listContainer = document.getElementById('reorder-client-list');
         listContainer.innerHTML = '';
-        
         masterData.forEach(client => {
             const li = document.createElement('li');
             li.className = 'draggable-client-item';
             li.draggable = true;
             li.dataset.id = client.id;
             li.innerHTML = `<span class="drag-handle">☰</span> ${client.name}`;
-            
-            // Event Listeners for HTML5 Drag & Drop
             li.addEventListener('dragstart', handleDragStart);
             li.addEventListener('dragover', handleDragOver);
             li.addEventListener('drop', handleDrop);
             li.addEventListener('dragenter', handleDragEnter);
             li.addEventListener('dragleave', handleDragLeave);
             li.addEventListener('dragend', handleDragEnd);
-
             listContainer.appendChild(li);
         });
-
         openCustomModalWindow('reorder-clients-modal-overlay');
     }
-
-    function handleDragStart(e) {
-        draggedItem = this;
-        setTimeout(() => this.classList.add('dragging'), 0);
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', this.innerHTML);
-    }
-
-    function handleDragOver(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        return false;
-    }
-
-    function handleDragEnter(e) {
-        e.preventDefault();
-        if (this !== draggedItem) {
-            this.classList.add('drag-over');
-        }
-    }
-
-    function handleDragLeave(e) {
-        this.classList.remove('drag-over');
-    }
-
-    function handleDrop(e) {
-        e.stopPropagation();
-        if (draggedItem !== this) {
-            const list = this.parentNode;
-            const items = Array.from(list.children);
-            const draggedIndex = items.indexOf(draggedItem);
-            const droppedIndex = items.indexOf(this);
-
-            if (draggedIndex < droppedIndex) {
-                this.after(draggedItem);
-            } else {
-                this.before(draggedItem);
-            }
-        }
-        this.classList.remove('drag-over');
-        return false;
-    }
-
-    function handleDragEnd(e) {
-        this.classList.remove('dragging');
-        const items = document.querySelectorAll('.draggable-client-item');
-        items.forEach(item => item.classList.remove('drag-over'));
-    }
-
+    function handleDragStart(e) { draggedItem = this; setTimeout(() => this.classList.add('dragging'), 0); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/html', this.innerHTML); }
+    function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+    function handleDragEnter(e) { e.preventDefault(); if (this !== draggedItem) this.classList.add('drag-over'); }
+    function handleDragLeave(e) { this.classList.remove('drag-over'); }
+    function handleDrop(e) { e.stopPropagation(); if (draggedItem !== this) { const items = Array.from(this.parentNode.children); const draggedIndex = items.indexOf(draggedItem); const droppedIndex = items.indexOf(this); if (draggedIndex < droppedIndex) this.after(draggedItem); else this.before(draggedItem); } this.classList.remove('drag-over'); return false; }
+    function handleDragEnd(e) { this.classList.remove('dragging'); document.querySelectorAll('.draggable-client-item').forEach(item => item.classList.remove('drag-over')); }
     function saveReorderedClients() {
-        const listItems = document.querySelectorAll('.draggable-client-item');
-        const newOrderIds = Array.from(listItems).map(item => parseInt(item.dataset.id));
-        
-        // Rebuild masterData array based on the new visual order
+        const newOrderIds = Array.from(document.querySelectorAll('.draggable-client-item')).map(item => parseInt(item.dataset.id));
         const newMasterData = [];
-        newOrderIds.forEach(id => {
-            const client = masterData.find(c => c.id === id);
-            if (client) newMasterData.push(client);
-        });
-        
-        masterData = newMasterData;
-        saveState();
-        renderDashboardHTML();
-        closeCustomModalWindow('reorder-clients-modal-overlay');
+        newOrderIds.forEach(id => { const client = masterData.find(c => c.id === id); if (client) newMasterData.push(client); });
+        masterData = newMasterData; saveState(); renderDashboardHTML(); closeCustomModalWindow('reorder-clients-modal-overlay');
     }
-    // ----------------------------------------
 
     function downloadLatestCloudData() {
         database.ref('tracker_state').on('value', (snapshot) => {
             const cloudData = snapshot.val();
-            if (cloudData && cloudData.masterData) {
-                masterData = cloudData.masterData;
-                globalReportingMonth = cloudData.globalReportingMonth || 'June 2026';
+            if (cloudData) {
+                if (cloudData.masterData) masterData = cloudData.masterData;
+                if (cloudData.globalReportingMonth) globalReportingMonth = cloudData.globalReportingMonth;
+                if (cloudData.passkey) currentAppPasskey = cloudData.passkey;
             }
             document.getElementById('global-month-input').value = globalReportingMonth;
             if (!isUserTyping) renderDashboardHTML(); 
@@ -726,12 +623,11 @@
         badge.classList.add('is-syncing');
         text.innerText = "Syncing...";
         database.ref('tracker_state').set({
-            masterData: masterData, globalReportingMonth: globalReportingMonth
+            masterData: masterData, 
+            globalReportingMonth: globalReportingMonth,
+            passkey: currentAppPasskey
         }).then(() => {
-            setTimeout(() => {
-                badge.classList.remove('is-syncing');
-                text.innerText = "Synced";
-            }, 200);
+            setTimeout(() => { badge.classList.remove('is-syncing'); text.innerText = "Synced"; }, 200);
         });
     }
 
@@ -740,48 +636,43 @@
     function parseSmartAccountingDate(inputValue) {
         let input = inputValue.trim().replace(/[^0-9\s\/]/g, '');
         if (!input) return '';
-        
         let parts = input.split(/[\s\/]+/).filter(p => p.length > 0);
         let day = '', month = '', year = '';
-        
         let today = new Date();
         let currentMonth = String(today.getMonth() + 1).padStart(2, '0'); 
         let currentYear = String(today.getFullYear());
 
-        if (parts.length === 1 && parts[0].length >= 8) {
-            let cleanDigits = parts[0].substring(0, 8);
-            day = cleanDigits.substring(0, 2);
-            month = cleanDigits.substring(2, 4);
-            year = cleanDigits.substring(4, 8);
-        } else if (parts.length === 1) { 
-            day = parts[0].substring(0, 2).padStart(2, '0');
-            month = currentMonth; year = currentYear; 
-        } else if (parts.length === 2) { 
-            day = parts[0].substring(0, 2).padStart(2, '0');
-            month = parts[1].substring(0, 2).padStart(2, '0'); year = currentYear; 
-        } else if (parts.length >= 3) {
-            day = parts[0].substring(0, 2).padStart(2, '0');
-            month = parts[1].substring(0, 2).padStart(2, '0');
-            let rawYear = parts[2].substring(0, 4);
-            year = rawYear.length === 2 ? '20' + rawYear : rawYear.padStart(4, '0');
-        } else {
-            return '';
-        }
+        if (parts.length === 1 && parts[0].length >= 8) { let clean = parts[0].substring(0, 8); day = clean.substring(0, 2); month = clean.substring(2, 4); year = clean.substring(4, 8); }
+        else if (parts.length === 1) { day = parts[0].substring(0, 2).padStart(2, '0'); month = currentMonth; year = currentYear; }
+        else if (parts.length === 2) { day = parts[0].substring(0, 2).padStart(2, '0'); month = parts[1].substring(0, 2).padStart(2, '0'); year = currentYear; }
+        else if (parts.length >= 3) { day = parts[0].substring(0, 2).padStart(2, '0'); month = parts[1].substring(0, 2).padStart(2, '0'); let rawYear = parts[2].substring(0, 4); year = rawYear.length === 2 ? '20' + rawYear : rawYear.padStart(4, '0'); }
+        else return '';
 
-        let d = parseInt(day);
-        let m = parseInt(month);
-        let y = parseInt(year);
-
-        if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > 2100) {
-            return ''; 
-        }
-
+        let d = parseInt(day), m = parseInt(month), y = parseInt(year);
+        if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > 2100) return ''; 
         let testDate = new Date(y, m - 1, d);
-        if (testDate.getFullYear() !== y || testDate.getMonth() !== (m - 1) || testDate.getDate() !== d) {
-            return ''; 
-        }
-
+        if (testDate.getFullYear() !== y || testDate.getMonth() !== (m - 1) || testDate.getDate() !== d) return ''; 
         return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
+    }
+
+    // NEW: Client Card Toggle Actions
+    function toggleClientCollapse(clientId) {
+        const card = document.getElementById(`client-row-${clientId}`);
+        if (collapsedClients.has(clientId)) {
+            collapsedClients.delete(clientId);
+            card.classList.remove('is-collapsed');
+        } else {
+            collapsedClients.add(clientId);
+            card.classList.add('is-collapsed');
+        }
+    }
+
+    function setAllClientsExpansion(expandAll) {
+        masterData.forEach(client => {
+            if (expandAll) collapsedClients.delete(client.id);
+            else collapsedClients.add(client.id);
+        });
+        renderDashboardHTML();
     }
 
     function removeEntireClientProfile(clientId) {
@@ -805,19 +696,22 @@
     });
 
     function updateDematName(clientId, dematId, value) {
-        const client = masterData.find(c => c.id === clientId);
-        const d = client?.demats?.find(dm => dm.id === dematId);
+        const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId);
         if (d) { d.name = value; saveState(); }
+    }
+
+    // NEW: Function to sync demat remarks
+    function updateDematRemarks(clientId, dematId, value) {
+        const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId);
+        if (d) { d.remarks = value; saveState(); }
     }
 
     function addDematAccount(clientId) {
         const client = masterData.find(c => c.id === clientId);
         if(client) {
-            if (!client.demats) {
-                client.demats = [];
-            }
+            if (!client.demats) client.demats = [];
             client.demats.push({
-                id: Date.now(), name: 'New Broker A/c', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: ''
+                id: Date.now(), name: 'New Broker A/c', remarks: '', entryLedger: '', entryContract: '', entryPnl: '', fileLedger: '', fileContract: '', filePnl: ''
             });
             renderDashboardHTML(); saveState();
         }
@@ -843,8 +737,7 @@
     function handleInputSync(clientId, dematId, key, rawValue, isDemat = false) {
         let parsedValue = parseSmartAccountingDate(rawValue);
         if (isDemat) {
-            const client = masterData.find(c => c.id === clientId);
-            const d = client?.demats?.find(dm => dm.id === dematId);
+            const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId);
             if (d) d[key] = parsedValue;
         } else {
             const client = masterData.find(c => c.id === clientId);
@@ -860,8 +753,7 @@
         const [yyyy, mm, dd] = dateVal.split('-');
         const formattedStr = `${dd}/${mm}/${yyyy}`;
         if (isDemat) {
-            const client = masterData.find(c => c.id === clientId);
-            const d = client?.demats?.find(dm => dm.id === dematId);
+            const d = masterData.find(c => c.id === clientId)?.demats?.find(dm => dm.id === dematId);
             if (d) d[key] = formattedStr;
         } else {
             const client = masterData.find(c => c.id === clientId);
@@ -883,13 +775,14 @@
                 c.demats.forEach(d => {
                     dematCol += `<li><strong>${d.name}</strong><br>
                     <span style="color:#475569;">Entries:</span> Ledger:${d.entryLedger || '—'} | CN:${d.entryContract || '—'} | P&L:${d.entryPnl || '—'}<br>
-                    <span style="color:#475569;">Filing:</span> Ledger:${d.fileLedger || '—'} | CN:${d.fileContract || '—'} | P&L:${d.filePnl || '—'}</li>`;
+                    <span style="color:#475569;">Filing:</span> Ledger:${d.fileLedger || '—'} | CN:${d.fileContract || '—'} | P&L:${d.filePnl || '—'}<br>
+                    <span style="color:#475569;">Remarks:</span> ${d.remarks || '—'}</li>`;
                 });
             }
             dematCol += '</ul>';
             rowsHTML += `<tr><td style="width:22%; font-weight:700;">${c.name}</td><td style="width:18%;">${bankCol}</td><td style="width:40%;">${dematCol}</td><td style="width:20%;">${c.internalNotes || '-'}</td></tr>`;
         });
-        mount.innerHTML = `<h2 style="text-align:center; font-size:16px; font-weight:800; margin-bottom:12px; color:#0f172a;">Master Monthly Progress Sheet (${globalReportingMonth})</h2><table class="print-table"><thead><tr><th style="width:22%;">Client Name</th><th style="width:18%;">Bank Account</th><th style="width:40%;">Demat Accounts Summary</th><th style="width:20%;">Remarks</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
+        mount.innerHTML = `<h2 style="text-align:center; font-size:16px; font-weight:800; margin-bottom:12px; color:#0f172a;">Master Monthly Progress Sheet (${globalReportingMonth})</h2><table class="print-table"><thead><tr><th style="width:22%;">Client Name</th><th style="width:18%;">Bank Account</th><th style="width:40%;">Demat Accounts Summary</th><th style="width:20%;">Client Remarks</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
         window.print();
     }
 
@@ -911,7 +804,7 @@
                         <div class="demat-card-item">
                             <div class="demat-card-header">
                                 <input type="text" class="demat-name-input" value="${d.name}" onchange="updateDematName(${client.id}, ${d.id}, this.value)" />
-                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove Broker</button>
+                                <button class="btn-delete-demat" onclick="removeDematAccount(${client.id}, ${d.id})">🗑 Remove</button>
                             </div>
                             
                             <div class="demat-row-block">
@@ -931,6 +824,11 @@
                                     <div class="mini-input-cell"><span>P&L</span><div class="date-input-container"><input type="text" id="txt-${client.id}-${d.id}-filePnl" class="${fPClass}" value="${d.filePnl}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /><div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-${client.id}-${d.id}-filePnl')"><input type="date" id="pkr-${client.id}-${d.id}-filePnl" onchange="handlePickerSync(${client.id}, ${d.id}, 'filePnl', this.value, true)" /></div></div></div>
                                 </div>
                             </div>
+
+                            <div class="demat-row-block" style="margin-top: 8px;">
+                                <div class="sub-block-title">📝 Remarks</div>
+                                <input type="text" class="demat-remarks-input" value="${d.remarks || ''}" placeholder="Notes for this demat..." onchange="updateDematRemarks(${client.id}, ${d.id}, this.value)" />
+                            </div>
                         </div>
                     `;
                 });
@@ -939,49 +837,59 @@
             const bEntryClass = client.bankEntryDate?.trim() !== '' ? 'has-date' : 'empty-date';
             const bFileClass = client.bankFilingDate?.trim() !== '' ? 'has-date' : 'empty-date';
             
+            // Apply a CSS class if this client is currently in the "collapsed" set
+            const collapsedClass = collapsedClients.has(client.id) ? 'is-collapsed' : '';
+
             const cardHTML = `
-                <div class="client-card" id="client-row-${client.id}">
+                <div class="client-card ${collapsedClass}" id="client-row-${client.id}">
                     <div class="client-header">
-                        <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" />
+                        <div class="client-title-group">
+                            <button class="toggle-collapse-btn" onclick="toggleClientCollapse(${client.id})">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <input type="text" class="client-title" value="${client.name}" onchange="updateClientCardName(${client.id}, this.value)" />
+                        </div>
                         <button class="btn-delete-client" onclick="removeEntireClientProfile(${client.id})">Delete Profile</button>
                     </div>
 
-                    <div class="work-grid">
-                        <div class="work-section">
-                            <h4>I. Bank Book</h4>
-                            <div class="compact-input-row">
-                                <label>Entries:</label>
-                                <div class="date-input-container">
-                                    <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
-                                    <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankEntryDate-${client.id}')"><input type="date" id="pkr-bankEntryDate-${client.id}" onchange="handlePickerSync(${client.id}, null, 'bankEntryDate', this.value)" /></div>
+                    <div class="client-body">
+                        <div class="work-grid">
+                            <div class="work-section">
+                                <h4>I. Bank Book</h4>
+                                <div class="compact-input-row">
+                                    <label>Entries:</label>
+                                    <div class="date-input-container">
+                                        <input type="text" id="txt-bankEntryDate-${client.id}" class="${bEntryClass}" value="${client.bankEntryDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, null, 'bankEntryDate', this.value)" />
+                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankEntryDate-${client.id}')"><input type="date" id="pkr-bankEntryDate-${client.id}" onchange="handlePickerSync(${client.id}, null, 'bankEntryDate', this.value)" /></div>
+                                    </div>
+                                </div>
+                                <div class="compact-input-row" style="margin-top:8px;">
+                                    <label>Filing:</label>
+                                    <div class="date-input-container">
+                                        <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
+                                        <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankFilingDate-${client.id}')"><input type="date" id="pkr-bankFilingDate-${client.id}" onchange="handlePickerSync(${client.id}, null, 'bankFilingDate', this.value)" /></div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="compact-input-row" style="margin-top:8px;">
-                                <label>Filing:</label>
-                                <div class="date-input-container">
-                                    <input type="text" id="txt-bankFilingDate-${client.id}" class="${bFileClass}" value="${client.bankFilingDate || ''}" placeholder="DD/MM/YYYY" maxlength="10" onchange="handleInputSync(${client.id}, null, 'bankFilingDate', this.value)" />
-                                    <div class="picker-wrapper" onmousedown="forceCalendarPickerTrigger(event, 'pkr-bankFilingDate-${client.id}')"><input type="date" id="pkr-bankFilingDate-${client.id}" onchange="handlePickerSync(${client.id}, null, 'bankFilingDate', this.value)" /></div>
-                                </div>
+
+                            <div class="work-section">
+                                <h4 style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span>II. Demat Tracker</span>
+                                    <button style="background:none; border:none; color:var(--text-light); font-weight:bold; cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" 
+                                    onmouseover="this.style.backgroundColor='var(--success)'; this.style.color='#ffffff';" 
+                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-light)';" 
+                                    onclick="addDematAccount(${client.id})">
+                                    + Add Demat
+                                    </button>
+                                </h4>
+                                <div class="demat-wrapper">${dematsHTML}</div>
                             </div>
                         </div>
 
-                        <div class="work-section">
-                            <h4 style="display:flex; justify-content:space-between; align-items:center;">
-                                <span>II. Demat Tracker</span>
-                                <button style="background:none; border:none; color:var(--text-light); font-weight:bold; cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" 
-        onmouseover="this.style.backgroundColor='var(--success)'; this.style.color='#ffffff';" 
-        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-light)';" 
-        onclick="addDematAccount(${client.id})">
-    + Add Demat
-</button>
-                            </h4>
-                            <div class="demat-wrapper">${dematsHTML}</div>
+                        <div class="notes-section">
+                            <span>Client Remarks:</span>
+                            <input type="text" class="notes-input" data-client-id="${client.id}" value="${client.internalNotes || ''}" placeholder="Write global notes here..." />
                         </div>
-                    </div>
-
-                    <div class="notes-section">
-                        <span>Remarks:</span>
-                        <input type="text" class="notes-input" data-client-id="${client.id}" value="${client.internalNotes || ''}" placeholder="Write notes here..." />
                     </div>
                 </div>
             `;
