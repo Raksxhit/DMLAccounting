@@ -167,7 +167,6 @@
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; 
         }
         
-        /* NEW STYLES: Makes the entire title group area clickable */
         .client-title-group { 
             display: flex; align-items: center; gap: 10px; flex: 1; 
             cursor: pointer; padding: 6px 8px; margin-left: -8px; border-radius: 6px;
@@ -178,7 +177,7 @@
         .toggle-collapse-btn {
             background: none; border: none; display: flex; align-items: center; justify-content: center;
             width: 24px; height: 24px; border-radius: 4px; color: var(--text-light); transition: background 0.2s;
-            pointer-events: none; /* Let the parent group handle the clicks */
+            pointer-events: none;
         }
         .toggle-collapse-btn svg { width: 16px; height: 16px; transition: transform 0.2s; }
         .is-collapsed .toggle-collapse-btn svg { transform: rotate(-90deg); }
@@ -391,10 +390,7 @@
     </header>
 
     <div class="top-controls-bar">
-        <button onclick="setAllClientsExpansion(true)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg> Expand All
-        </button>
-        <button onclick="setAllClientsExpansion(false)">
+        <button id="toggle-all-btn" onclick="toggleAllClients()">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg> Collapse All
         </button>
     </div>
@@ -430,6 +426,7 @@
     let pendingSecureAction = null; 
     let currentAppPasskey = "031097";
     let collapsedClients = new Set();
+    let isGlobalExpanded = true; // Tracks the state of the toggle button
 
     document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
@@ -549,6 +546,13 @@
         });
         
         collapsedClients.delete(uniqueId);
+        
+        // Re-evaluate global toggle sync
+        if(collapsedClients.size !== masterData.length) {
+            isGlobalExpanded = true;
+            updateToggleAllButton();
+        }
+
         renderDashboardHTML(); saveState();
         inputField.value = ''; closeCustomModalWindow('add-client-modal-overlay');
     }
@@ -644,15 +648,45 @@
         return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
     }
 
-    function toggleClientCollapse(clientId) {
-        const card = document.getElementById(`client-row-${clientId}`);
-        if (collapsedClients.has(clientId)) { collapsedClients.delete(clientId); card.classList.remove('is-collapsed'); } 
-        else { collapsedClients.add(clientId); card.classList.add('is-collapsed'); }
+    function updateToggleAllButton() {
+        const btn = document.getElementById('toggle-all-btn');
+        if (!btn) return;
+        if (isGlobalExpanded) {
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg> Collapse All`;
+        } else {
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg> Expand All`;
+        }
+    }
+
+    function toggleAllClients() {
+        isGlobalExpanded = !isGlobalExpanded;
+        setAllClientsExpansion(isGlobalExpanded);
+        updateToggleAllButton();
     }
 
     function setAllClientsExpansion(expandAll) {
         masterData.forEach(client => { if (expandAll) collapsedClients.delete(client.id); else collapsedClients.add(client.id); });
         renderDashboardHTML();
+    }
+
+    function toggleClientCollapse(clientId) {
+        const card = document.getElementById(`client-row-${clientId}`);
+        if (collapsedClients.has(clientId)) { 
+            collapsedClients.delete(clientId); 
+            card.classList.remove('is-collapsed'); 
+        } else { 
+            collapsedClients.add(clientId); 
+            card.classList.add('is-collapsed'); 
+        }
+
+        // Sync the master toggle button intelligently
+        if (collapsedClients.size === masterData.length) {
+            isGlobalExpanded = false;
+        } else {
+            // Even if one is expanded, switch the toggle back so it can act as "Collapse All"
+            isGlobalExpanded = true;
+        }
+        updateToggleAllButton();
     }
 
     function removeEntireClientProfile(clientId) {
